@@ -1,0 +1,15 @@
+{
+  "calls": 123,
+  "failures": 5,
+  "by_task": {
+    "probe": 3,
+    "chat": 56,
+    "chat_repair": 38,
+    "debug": 3,
+    "document": 6,
+    "note": 8,
+    "translate": 9
+  },
+  "tokens_in": 95110,
+  "tokens_out": 10510
+}

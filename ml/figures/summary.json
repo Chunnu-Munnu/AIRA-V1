@@ -1,0 +1,21 @@
+{
+  "risk": {
+    "figure": "ml\\figures\\risk.png",
+    "n": 40000,
+    "positives": 705,
+    "ebm_ap": 0.3195161970120925,
+    "xgb_ap": 0.3739866577751142,
+    "ebm_net_benefit_at_3pct": 0.009105670103092784,
+    "treat_all_net_benefit_at_3pct": -0.01275773195876289
+  },
+  "trajectory": {
+    "figure": "ml\\figures\\trajectory.png",
+    "n": 40000,
+    "positives": 705,
+    "ebm_ap": 0.9254397081955836,
+    "xgb_ap": 0.9238908490045692,
+    "ebm_net_benefit_at_3pct": 0.016307216494845362,
+    "treat_all_net_benefit_at_3pct": -0.01275773195876289
+  },
+  "shape_functions": "ml\\figures\\risk_shape_functions.png"
+}

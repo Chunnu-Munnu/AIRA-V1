@@ -1,0 +1,34 @@
+# secrets
+.env
+*.pem
+*.key
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# ml artifacts
+ml/artifacts/
+engine/models/*.onnx
+engine/models/*.pkl
+ml/data/*.csv
+
+# rag
+rag/chroma_db/
+
+# voice
+voice/audio/cache/
+!voice/audio/prerendered/
+
+# node
+node_modules/
+web/dist/
+web/.vite/
+
+# os
+Thumbs.db
+.DS_Store

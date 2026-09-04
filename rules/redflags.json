@@ -1,0 +1,292 @@
+{
+  "ruleset_version": "1.0.0",
+  "updated": "2026-09-03",
+  "description": "Red flags fire on the DAY THEY ARE REPORTED. They do not wait for a safe window, they are not scored by any model, and no model output can lower the tier they set. A red flag is a hard override: rules decide, models only rank within what the rules already allowed.",
+  "override_policy": {
+    "model_may_raise_tier": true,
+    "model_may_lower_tier": false,
+    "llm_may_alter_tier": false,
+    "note": "If the risk model returns 0.4% and a red flag is present, the tier stays HIGH. This is deliberate and is the single most important safety property of AIRA."
+  },
+  "flags": [
+    {
+      "id": "RF_HAEMOPTYSIS",
+      "symptom": "haemoptysis",
+      "conditions": {
+        "min_age": 40
+      },
+      "tier": "HIGH",
+      "action": "URGENT_CHEST_XRAY_2WK",
+      "patient_message": {
+        "en": "Coughing up blood always needs to be checked by a doctor. Please go this week, not later.",
+        "hi": "खांसी में खून आने की जांच डॉक्टर से जरूर कराएं। इसी सप्ताह जाएं।",
+        "kn": "ಕೆಮ್ಮಿನಲ್ಲಿ ರಕ್ತ ಬಂದರೆ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ. ಈ ವಾರವೇ ಹೋಗಿ."
+      },
+      "clinician_message": "Unexplained haemoptysis, age 40+. NG12 1.1.1: suspected cancer pathway referral.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.1.1"
+      }
+    },
+    {
+      "id": "RF_DYSPHAGIA",
+      "symptom": "dysphagia",
+      "conditions": {},
+      "tier": "HIGH",
+      "action": "URGENT_ENDOSCOPY_2WK",
+      "patient_message": {
+        "en": "Trouble swallowing food needs a camera test of the food pipe. This should not be treated with medicines alone.",
+        "hi": "निगलने में दिक्कत के लिए खाने की नली की जांच जरूरी है। सिर्फ दवा से इलाज न करें।",
+        "kn": "ನುಂಗಲು ಕಷ್ಟವಾದರೆ ಆಹಾರ ನಾಳದ ಪರೀಕ್ಷೆ ಬೇಕು. ಔಷಧಿ ಮಾತ್ರ ಸಾಕಾಗುವುದಿಲ್ಲ."
+      },
+      "clinician_message": "Dysphagia at any age. NG12 1.2.1: urgent direct access upper GI endoscopy within 2 weeks.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.2.1"
+      }
+    },
+    {
+      "id": "RF_POSTMENOPAUSAL_BLEEDING",
+      "symptom": "postmenopausal_bleeding",
+      "conditions": {
+        "sex": "female",
+        "min_age": 40
+      },
+      "tier": "HIGH",
+      "action": "URGENT_PELVIC_ULTRASOUND",
+      "patient_message": {
+        "en": "Bleeding after your periods have stopped is never normal. It usually is not cancer, but it must be examined.",
+        "hi": "मासिक बंद होने के बाद खून आना सामान्य नहीं है। अक्सर कैंसर नहीं होता, पर जांच जरूरी है।",
+        "kn": "ಮುಟ್ಟು ನಿಂತ ಮೇಲೆ ರಕ್ತಸ್ರಾವ ಸಾಮಾನ್ಯವಲ್ಲ. ಸಾಮಾನ್ಯವಾಗಿ ಕ್ಯಾನ್ಸರ್ ಅಲ್ಲ, ಆದರೆ ಪರೀಕ್ಷೆ ಬೇಕು."
+      },
+      "clinician_message": "Post-menopausal bleeding. NG12 1.6.1: suspected cancer pathway referral for endometrial cancer.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.6.1"
+      }
+    },
+    {
+      "id": "RF_BREAST_LUMP",
+      "symptom": "breast_lump",
+      "conditions": {
+        "min_age": 30
+      },
+      "tier": "HIGH",
+      "action": "TRIPLE_ASSESSMENT",
+      "patient_message": {
+        "en": "A new lump in the breast should be examined. Most lumps are not cancer, but every lump needs one proper check.",
+        "hi": "स्तन में नई गांठ की जांच कराएं। ज्यादातर गांठें कैंसर नहीं होतीं, पर हर गांठ की एक बार जांच जरूरी है।",
+        "kn": "ಸ್ತನದಲ್ಲಿ ಹೊಸ ಗಂಟು ಪರೀಕ್ಷಿಸಬೇಕು. ಹೆಚ್ಚಿನವು ಕ್ಯಾನ್ಸರ್ ಅಲ್ಲ, ಆದರೆ ಒಮ್ಮೆ ಪರೀಕ್ಷೆ ಬೇಕು."
+      },
+      "clinician_message": "Unexplained breast lump, age 30+. NG12 1.5.1: suspected cancer pathway referral.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.5.1"
+      }
+    },
+    {
+      "id": "RF_NIPPLE_RETRACTION",
+      "symptom": "nipple_retraction",
+      "conditions": {
+        "min_age": 30
+      },
+      "tier": "HIGH",
+      "action": "TRIPLE_ASSESSMENT",
+      "patient_message": {
+        "en": "A nipple that has newly turned inward needs to be examined.",
+        "hi": "निप्पल का नया अंदर की ओर मुड़ना जांच योग्य है।",
+        "kn": "ಮೊಲೆತೊಟ್ಟು ಹೊಸದಾಗಿ ಒಳಕ್ಕೆ ಹೋದರೆ ಪರೀಕ್ಷೆ ಬೇಕು."
+      },
+      "clinician_message": "Nipple retraction, age 30+. NG12 1.5.3.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.5.3"
+      }
+    },
+    {
+      "id": "RF_HAEMATURIA",
+      "symptom": "haematuria",
+      "conditions": {
+        "min_age": 45
+      },
+      "tier": "HIGH",
+      "action": "URGENT_UROLOGY_2WK",
+      "patient_message": {
+        "en": "Blood in urine needs to be checked even if there is no pain and even if it happened only once.",
+        "hi": "पेशाब में खून की जांच जरूरी है, चाहे दर्द न हो और चाहे एक ही बार हुआ हो।",
+        "kn": "ಮೂತ್ರದಲ್ಲಿ ರಕ್ತ ಬಂದರೆ ನೋವಿಲ್ಲದಿದ್ದರೂ, ಒಮ್ಮೆ ಮಾತ್ರ ಆದರೂ ಪರೀಕ್ಷೆ ಬೇಕು."
+      },
+      "clinician_message": "Visible haematuria, age 45+. NG12 1.6.1: suspected cancer pathway referral for bladder cancer.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.6.1"
+      }
+    },
+    {
+      "id": "RF_JAUNDICE",
+      "symptom": "jaundice",
+      "conditions": {
+        "min_age": 40
+      },
+      "tier": "HIGH",
+      "action": "URGENT_ABDOMINAL_IMAGING",
+      "patient_message": {
+        "en": "Yellowing of the eyes or skin needs to be seen urgently.",
+        "hi": "आंखों या त्वचा का पीला होना तुरंत दिखाएं।",
+        "kn": "ಕಣ್ಣು ಅಥವಾ ಚರ್ಮ ಹಳದಿಯಾದರೆ ತಕ್ಷಣ ತೋರಿಸಿ."
+      },
+      "clinician_message": "Painless jaundice, age 40+. NG12 1.2.9: suspected pancreatic cancer pathway.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.2.9"
+      }
+    },
+    {
+      "id": "RF_ABDOMINAL_LUMP",
+      "symptom": "abdominal_lump",
+      "conditions": {},
+      "tier": "HIGH",
+      "action": "URGENT_ABDOMINAL_IMAGING",
+      "patient_message": {
+        "en": "A lump you can feel in your stomach needs a scan.",
+        "hi": "पेट में महसूस होने वाली गांठ की स्कैन जांच जरूरी है।",
+        "kn": "ಹೊಟ್ಟೆಯಲ್ಲಿ ಸಿಗುವ ಗಂಟಿಗೆ ಸ್ಕ್ಯಾನ್ ಬೇಕು."
+      },
+      "clinician_message": "Palpable abdominal mass. NG12 1.3.3.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.3.3"
+      }
+    },
+    {
+      "id": "RF_TESTICULAR_LUMP",
+      "symptom": "testicular_lump",
+      "conditions": {
+        "sex": "male",
+        "min_age": 15
+      },
+      "tier": "HIGH",
+      "action": "URGENT_SCROTAL_ULTRASOUND",
+      "patient_message": {
+        "en": "A lump in the testicle should be scanned. This is very treatable when found early.",
+        "hi": "अंडकोष की गांठ की स्कैन कराएं। जल्दी पता चलने पर इलाज बहुत अच्छा होता है।",
+        "kn": "ವೃಷಣದ ಗಂಟನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿಸಿ. ಬೇಗ ಪತ್ತೆಯಾದರೆ ಚಿಕಿತ್ಸೆ ಬಹಳ ಪರಿಣಾಮಕಾರಿ."
+      },
+      "clinician_message": "Non-painful testicular enlargement. NG12 1.6.5.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.6.5"
+      }
+    },
+    {
+      "id": "RF_PAED_ABDOMINAL_MASS",
+      "symptom": "abdominal_mass_child",
+      "conditions": {
+        "max_age": 18
+      },
+      "tier": "HIGH",
+      "action": "VERY_URGENT_PAED_REFERRAL_48H",
+      "patient_message": {
+        "en": "A lump in a child's stomach must be seen within 48 hours.",
+        "hi": "बच्चे के पेट की गांठ 48 घंटे के अंदर दिखाएं।",
+        "kn": "ಮಗುವಿನ ಹೊಟ್ಟೆಯ ಗಂಟನ್ನು 48 ಗಂಟೆಗಳಲ್ಲಿ ತೋರಿಸಬೇಕು."
+      },
+      "clinician_message": "Paediatric palpable abdominal mass. NG12 1.12.6: very urgent referral within 48 hours.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.12.6"
+      }
+    },
+    {
+      "id": "RF_BREAST_SKIN_CHANGE",
+      "symptom": "breast_skin_change",
+      "conditions": {
+        "min_age": 30
+      },
+      "tier": "HIGH",
+      "action": "TRIPLE_ASSESSMENT",
+      "patient_message": {
+        "en": "Changes in the skin of the breast need to be examined.",
+        "hi": "स्तन की त्वचा में बदलाव की जांच कराएं।",
+        "kn": "ಸ್ತನದ ಚರ್ಮದಲ್ಲಿ ಬದಲಾವಣೆ ಪರೀಕ್ಷಿಸಬೇಕು."
+      },
+      "clinician_message": "Breast skin change suggestive of malignancy. NG12 1.5.3.",
+      "citation": {
+        "source": "NG12",
+        "section": "1.5.3"
+      }
+    }
+  ],
+  "contextual_flags": [
+    {
+      "id": "CF_INVESTIGATION_GAP",
+      "label": "A red-flag symptom exists and no expected investigation has ever been ordered",
+      "trigger": "any active red flag AND count(episodes with investigation_ordered != 'none') == 0",
+      "tier_floor": "HIGH",
+      "clinician_message": "A red-flag symptom has been present across {n_episodes} encounters and no investigation from the expected set has been recorded. This is the single most common preventable pattern in delayed cancer diagnosis.",
+      "citation": {
+        "source": "Field research",
+        "section": "NGO interviews",
+        "quote": "All four organisations interviewed independently described repeated empirical treatment without a single confirmatory investigation being performed."
+      },
+      "patient_message": {
+        "en": "You have been seen {n_episodes} times for a symptom that needs a test, and no test has been done yet. Ask for the test.",
+        "hi": "जिस लक्षण के लिए जाँच ज़रूरी है, उसके लिए आप {n_episodes} बार दिखा चुके हैं और अब तक कोई जाँच नहीं हुई। जाँच के लिए कहें।",
+        "kn": "ಪರೀಕ್ಷೆ ಬೇಕಾದ ಲಕ್ಷಣಕ್ಕಾಗಿ ನೀವು {n_episodes} ಬಾರಿ ಭೇಟಿಯಾಗಿದ್ದೀರಿ, ಇನ್ನೂ ಯಾವ ಪರೀಕ್ಷೆಯೂ ಆಗಿಲ್ಲ. ಪರೀಕ್ಷೆಗೆ ಕೇಳಿ."
+      }
+    },
+    {
+      "id": "CF_TREATMENT_REFRACTORY",
+      "label": "Two or more treatments given and the symptom has not resolved, past the safe window",
+      "trigger": "n_failed_treatments >= 2 AND days_elapsed > safe_window_days",
+      "tier_floor": "HIGH",
+      "clinician_message": "This symptom has survived {n_failed_treatments} treatment attempts over {days_elapsed} days against a safe window of {safe_window_days} days. The working diagnosis has been wrong at least twice.",
+      "citation": {
+        "source": "Aarhus Statement",
+        "section": "diagnostic interval",
+        "quote": "Repeated consultations for the same symptom without diagnostic resolution are a recognised marker of prolonged diagnostic interval."
+      },
+      "patient_message": {
+        "en": "This has been treated {n_failed_treatments} times over {days_elapsed} days and has not settled. When treatment keeps not working, the next step is a test, not another treatment.",
+        "hi": "इसका {days_elapsed} दिनों में {n_failed_treatments} बार इलाज हुआ है और यह ठीक नहीं हुआ। जब इलाज बार-बार काम न करे, तो अगला कदम जाँच है, एक और दवा नहीं।",
+        "kn": "ಇದನ್ನು {days_elapsed} ದಿನಗಳಲ್ಲಿ {n_failed_treatments} ಬಾರಿ ಚಿಕಿತ್ಸೆ ಮಾಡಲಾಗಿದೆ, ಗುಣವಾಗಿಲ್ಲ. ಚಿಕಿತ್ಸೆ ಪದೇ ಪದೇ ಫಲಿಸದಿದ್ದಾಗ, ಮುಂದಿನ ಹೆಜ್ಜೆ ಪರೀಕ್ಷೆ, ಇನ್ನೊಂದು ಔಷಧಿ ಅಲ್ಲ."
+      }
+    },
+    {
+      "id": "CF_NEVER_SEEN",
+      "label": "Symptom well past its safe window and the patient has never sought care for it",
+      "trigger": "duration_ratio > 2.0 AND n_episodes == 0",
+      "tier_floor": "MODERATE",
+      "action": "ASHA_OUTREACH",
+      "clinician_message": "Symptom has persisted {days_elapsed} days ({duration_ratio}x its safe window) with no recorded healthcare encounter. This is a patient-interval delay, not a diagnostic-interval delay, and it needs outreach rather than referral.",
+      "patient_message": {
+        "en": "You have had this for {days_elapsed} days and have not seen anyone about it yet. Going once does not mean something is wrong. It means you will stop wondering.",
+        "hi": "आपको यह {days_elapsed} दिनों से है और आपने अभी तक किसी को नहीं दिखाया। एक बार दिखाने का मतलब यह नहीं कि कुछ गलत है। इसका मतलब है कि आप चिंता से मुक्त हो जाएंगे।",
+        "kn": "ನಿಮಗೆ ಇದು {days_elapsed} ದಿನಗಳಿಂದ ಇದೆ, ಇನ್ನೂ ಯಾರಿಗೂ ತೋರಿಸಿಲ್ಲ. ಒಮ್ಮೆ ತೋರಿಸಿದರೆ ಏನೋ ತಪ್ಪಿದೆ ಎಂದಲ್ಲ. ನಿಮ್ಮ ಚಿಂತೆ ನಿಲ್ಲುತ್ತದೆ ಎಂದರ್ಥ."
+      },
+      "citation": {
+        "source": "Aarhus Statement",
+        "section": "patient interval",
+        "quote": "The patient interval - the time from first bodily change to first presentation - is a distinct and independently addressable component of total diagnostic delay. Field research recorded 'not taking it seriously' and 'fear of the diagnosis' as the leading self-reported reasons for not presenting."
+      }
+    },
+    {
+      "id": "CF_MISSED_CHECKBACKS",
+      "label": "Patient has not responded to two or more scheduled check-backs",
+      "trigger": "missed_checkbacks >= 2",
+      "tier_floor": "MODERATE",
+      "action": "ASHA_OUTREACH",
+      "clinician_message": "Patient has missed {missed_checkbacks} scheduled check-backs. Silence is not evidence that the symptom resolved. Flagged for field outreach.",
+      "citation": {
+        "source": "AIRA design principle",
+        "section": "safety netting",
+        "quote": "Non-response is treated as a signal to reach out, never as consent that the symptom has resolved."
+      },
+      "patient_message": {
+        "en": "AIRA checked in more than once and did not hear back. If the symptom is still there, please see a doctor.",
+        "hi": "AIRA ने एक से ज़्यादा बार हाल पूछा और जवाब नहीं मिला। अगर लक्षण अभी भी है, तो कृपया डॉक्टर को दिखाएँ।",
+        "kn": "AIRA ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಬಾರಿ ಕುಶಲ ವಿಚಾರಿಸಿತು, ಉತ್ತರ ಸಿಗಲಿಲ್ಲ. ಲಕ್ಷಣ ಇನ್ನೂ ಇದ್ದರೆ, ದಯವಿಟ್ಟು ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಿ."
+      }
+    }
+  ]
+}

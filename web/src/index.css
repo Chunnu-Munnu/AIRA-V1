@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+  }
+  /* Every number that sits in a column lines up. Clinicians scan these. */
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-forest-500 ring-offset-2 ring-offset-paper;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-paper-card border border-paper-line rounded-xl2 shadow-card;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3
+           text-sm font-semibold transition disabled:opacity-40
+           disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-forest-900 text-white hover:bg-forest-700;
+  }
+  .btn-ghost {
+    @apply btn border border-paper-line bg-paper-card text-ink hover:bg-forest-50;
+  }
+  .btn-danger {
+    @apply btn border border-tier-high/30 bg-white text-tier-high hover:bg-tier-high/5;
+  }
+  .field {
+    @apply w-full rounded-xl border border-paper-line bg-white px-4 py-3 text-sm
+           text-ink placeholder:text-ink-faint focus:border-forest-500;
+  }
+  .label {
+    @apply block text-[11px] font-semibold uppercase tracking-[.09em] text-ink-faint mb-1.5;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1
+           text-[11px] font-semibold uppercase tracking-wide;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,1092 @@
+================================================================================
+AIRA — PROBLEM STATEMENT MASTERY DOCUMENT
+SH-HLT-05: AI-Enabled Early Cancer Detection, Misdiagnosis Prevention,
+           and Screening Awareness System for Timely Intervention
+================================================================================
+
+PURPOSE OF THIS DOCUMENT
+This is not a summary. This is the knowledge base you need so that when a judge
+— possibly a clinician, possibly a public-health person, possibly an ML person —
+probes you, you answer with numbers, named frameworks, and correct terminology
+instead of adjectives. Everything below is sourced. Read PART H (Q&A prep) last
+and out loud.
+
+Every statistic carries its source inline. VERIFY the ones you plan to say on
+stage against the primary source before the presentation. Never cite a number
+you cannot name the source for.
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+  PART A  — The burden: why this problem is worth a hackathon
+  PART B  — The anatomy of diagnostic delay (the core technical framing)
+  PART C  — Why misdiagnosis happens: cognitive + systemic mechanisms
+  PART D  — Screening science: the part most teams get wrong
+  PART E  — The Indian health system: where AIRA physically plugs in
+  PART F  — The AI/ML landscape: prior art, model choice, metrics
+  PART G  — Ethics, failure modes, regulation
+  PART H  — Stage arguments + anticipated judge questions
+  PART I  — Vocabulary sheet (say these words, not those words)
+  PART J  — Source list
+--------------------------------------------------------------------------------
+
+
+================================================================================
+PART A — THE BURDEN
+================================================================================
+
+A1. GLOBAL AND INDIAN SCALE
+
+  India, GLOBOCAN 2022 (IARC/WHO):
+    - 1,413,316 new cancer cases
+    - 916,827 cancer deaths
+    - Roughly 3 in 5 people diagnosed with cancer in India die of it.
+      (Compare: in high-income systems, ~2 in 5.)
+    - India ranks 3rd in South-East Asia for incidence, 2nd for mortality.
+    - Mortality is rising FASTER in females (1.2–4.4% annual % change over the
+      last decade) than males (1.2–2.4%).
+    Source: Lancet Regional Health SE Asia, 2025 analysis of GLOBOCAN 2022;
+            IARC India Fact Sheet.
+
+  THE KEY INFERENCE TO STATE ON STAGE:
+    The mortality-to-incidence ratio in India (~0.65) is far worse than in
+    high-income countries (~0.4). That gap is NOT mainly explained by treatment
+    quality. It is explained by STAGE AT PRESENTATION. This single sentence is
+    the entire justification for your project.
+
+A2. STAGE AT DIAGNOSIS — THE ACTUAL PROBLEM
+
+  Population-based data, Trivandrum District Cancer Registry (JCO Global
+  Oncology, 2019):
+    - 54% of all patients presented at Stage III or IV
+    - By site:  breast 37% | cervix 39% | ORAL CAVITY 67% | LUNG 88%
+
+  National Cancer Registry Programme, pooled hospital-based registries:
+    - Majority present locally advanced / locoregional:
+      breast 57.0% | cervix uteri 60.0% | head & neck 66.6% | stomach 50.8%
+    Source: NCRP, JCO Global Oncology "Cancer Statistics 2020".
+
+  Cervical cancer specifically: ~70% or more are Stage III+ at diagnosis in
+  India (historical Bangalore registry data).
+
+A3. WHY STAGE IS EVERYTHING — THE "STAGE SHIFT" ARGUMENT
+
+  Five-year survival by stage (Canadian population data; Italian data similar):
+    Breast:      Stage I 100%  →  II 92%  →  III 74%  →  IV 23%
+    Colon:       Stage I 96.7% →  II 83.4% → III 70.8% → IV 16.2%
+
+  MEMORISE THIS FRAMING:
+    "A woman diagnosed with Stage I breast cancer has essentially normal life
+     expectancy. The same woman, same tumour biology, diagnosed at Stage IV,
+     has roughly a 1-in-4 chance of being alive in five years. Nothing about
+     the cancer changed. Only the calendar did."
+
+  This is called STAGE SHIFT — moving the distribution of diagnoses from late
+  stage to early stage. It is the single measurable outcome your system targets.
+  Say "our target outcome metric is stage shift," not "we save lives."
+
+A4. THE ECONOMIC AND FAMILY BURDEN (the "family distress" clause in the PS)
+
+  - Cancer causes the HIGHEST catastrophic health expenditure (CHE) of any
+    disease category requiring hospitalisation in India: 79% CHE and 43%
+    distress financing.
+  - Breast cancer longitudinal cohort, Tata Memorial Centre, 2019–2022 (n=500):
+    CHE 84.2%, distress financing 72.4%. Worse among rural, poor and
+    agriculture-dependent households.
+  - Mean out-of-pocket expenditure per cancer hospitalisation: ~INR 57,232 —
+    highest of any condition.
+  - Insurance coverage existed for ~75% of that breast cancer cohort but
+    reduced CHE incidence by only 14 percentage points.
+    Sources: PLOS One 2018; Int J Equity Health 2024.
+
+  DEFINITIONS (use them precisely):
+    Catastrophic Health Expenditure (CHE) — out-of-pocket health spending
+      exceeding a threshold share (commonly 10% or 40%) of household
+      consumption or capacity to pay.
+    Distress financing — paying for care by borrowing, selling assets, or
+      taking contributions from friends/family.
+
+  THE ARGUMENT: late-stage cancer is not just deadlier, it is
+  DISPROPORTIONATELY more expensive — longer treatment, more modalities,
+  palliative care, lost wages, caregiver time. Early detection is a
+  poverty-prevention intervention, not just a clinical one.
+
+
+================================================================================
+PART B — THE ANATOMY OF DIAGNOSTIC DELAY
+================================================================================
+
+This part is the intellectual spine of your project. Learn it cold. It gives you
+a vocabulary that instantly signals you understand the domain.
+
+B1. THE MODEL OF PATHWAYS TO TREATMENT (Walter et al., 2012)
+    and THE AARHUS STATEMENT (Weller et al., British Journal of Cancer, 2012)
+
+  These are the internationally accepted frameworks for decomposing "delay" into
+  measurable intervals. The Aarhus Statement exists specifically to standardise
+  how researchers define these time points. Cite them.
+
+  The pathway, with the standard interval names:
+
+    [First bodily change]
+        |
+        |   APPRAISAL INTERVAL
+        |   (person notices something; interprets it; decides whether it means
+        |    anything). Ends when they decide they need to see someone.
+        v
+    [Decision to seek help]
+        |
+        |   HELP-SEEKING INTERVAL
+        |   (from decision to actually attending first consultation)
+        v
+    [FIRST PRESENTATION to a health professional]
+        |
+        |   DIAGNOSTIC INTERVAL  = PRIMARY CARE INTERVAL + SECONDARY CARE
+        |                          INTERVAL
+        |   - Primary care interval: first presentation -> referral
+        |   - Secondary care interval: referral -> diagnosis
+        v
+    [DIAGNOSIS]
+        |
+        |   PRE-TREATMENT INTERVAL
+        v
+    [Treatment starts]
+
+  IMPORTANT NUANCE — "date of first presentation" is defined by Aarhus as the
+  point at which it would have been AT LEAST POSSIBLE for the clinician to have
+  begun investigation or referral for possible serious pathology. That precise
+  definition matters, because it is the point from which the system (not the
+  patient) becomes accountable.
+
+B2. WHERE AIRA INTERVENES — MAP EVERY FEATURE TO AN INTERVAL
+
+  This mapping is your best slide. It shows you are not building features
+  randomly.
+
+    APPRAISAL INTERVAL
+      Problem: person doesn't know a 3-week ulcer is abnormal.
+      AIRA:    Symptom Persistence Clock + awareness/pictogram layer.
+               Converts a vague worry into a countable, visible number of days.
+
+    HELP-SEEKING INTERVAL
+      Problem: low awareness, distance, cost, fatalism, stigma, opportunity cost
+               of a day's lost wage.
+      AIRA:    Non-alarming, specific prompt ("go to the PHC, ask for X"),
+               local language + voice, ASHA-linked outreach.
+
+    PRIMARY CARE INTERVAL  <-- THIS IS AIRA'S UNIQUE CONTRIBUTION
+      Problem: repeat presentations, symptomatic treatment, no investigation,
+               information lost between visits.
+      AIRA:    Diagnostic Loop Detector + Doctor Handoff Card.
+
+    SECONDARY CARE INTERVAL
+      Problem: referral made but not acted on; patient lost to follow-up.
+      AIRA:    Referral tracking + ASHA/PHC dashboard follow-up queue.
+
+    (Screening pathway runs in parallel, for the ASYMPTOMATIC — see PART D.)
+
+B3. HARD DATA ON REPEAT CONSULTATIONS (this justifies the Loop Detector)
+
+  English National Cancer Patient Experience / audit data:
+    - Of 73,462 patients later diagnosed with cancer, 13,280 (18.1%) had seen
+      their GP THREE OR MORE times before referral.
+    - Among patients whose diagnosis involved at least one primary care
+      consultation, 22.9% had ≥3 pre-referral consultations.
+    - For RARER cancers, the proportion with ≥3 pre-referral consultations
+      ranged from >30% to 60%.
+    - Primary care interval scales with consultation count: roughly 1 month,
+      1.5 months, and 3 months for patients with 3, 4, and ≥5 pre-referral
+      consultations respectively.
+    Source: BJGP 2016 (Lyratzopoulos et al. and related), NCPES analyses.
+
+  THE ARGUMENT TO MAKE:
+    "This is data from the NHS — a system with universal coverage, electronic
+     records, continuity of care, and a national 2-week-wait referral standard.
+     Nearly one in five cancer patients still needed three or more visits before
+     anyone referred them. Now picture a system with none of those safeguards.
+     That is rural India. Our Loop Detector is the safeguard that does not
+     currently exist there."
+
+  That sentence is the strongest thing you can say in the whole pitch. It turns
+  a UK statistic into an argument about India.
+
+B4. WHY THE PRIMARY CARE INTERVAL IS THE RIGHT TARGET
+
+  Three reasons, all defensible:
+   1. It is the longest modifiable interval for many cancers.
+   2. It is where the information loss happens — each visit is a fresh start.
+   3. It is the only interval where a cheap software intervention can act,
+      because it requires no new diagnostic hardware, only memory and rules.
+
+
+================================================================================
+PART C — WHY MISDIAGNOSIS HAPPENS
+================================================================================
+
+Do not say "doctors make mistakes." Say the mechanism. Naming the cognitive
+error is what makes you sound informed and non-accusatory — and it reframes
+AIRA as helping clinicians rather than policing them.
+
+C1. THE BASE-RATE PROBLEM (the honest root cause)
+
+  Cancer is RARE in primary care. A typical full-time GP sees roughly 8–9 new
+  cancers per year among thousands of consultations. Symptoms that turn out to
+  be cancer are overwhelmingly caused by benign disease.
+
+  Real positive predictive values (PPV) of classic "alarm symptoms" in primary
+  care — Hamilton et al., BMJ 2007, General Practice Research Database:
+
+    Rectal bleeding    -> colorectal cancer:  2.4% (men), 2.0% (women)
+    Haemoptysis        -> respiratory cancer: 7.5% (men), 4.3% (women)
+    Dysphagia          -> oesophageal cancer: 5.7% (men), 2.4% (women)
+
+    Age-stratified spikes:
+    Haemoptysis, men 75–84:  17.1%
+    Dysphagia,   men 65–74:   9.0%
+
+  READ THAT AGAIN. Rectal bleeding — the textbook red flag — is cancer about
+  2 times in 100. Which means the doctor who says "it's probably piles" is
+  RIGHT 98 times out of 100.
+
+  THIS IS THE CENTRAL INSIGHT OF YOUR ENTIRE PROJECT:
+    Misdiagnosis in cancer is not usually incompetence. It is a correct
+    probabilistic judgement at a single point in time. The error is not the
+    first "it's probably benign." The error is the SECOND and THIRD one — when
+    nobody updates on the fact that the benign explanation has now failed.
+
+    A single symptom is weak evidence. A symptom that has SURVIVED TWO FAILED
+    TREATMENTS is strong evidence. Nobody currently computes that, because
+    nobody holds the history.
+
+  Say this on stage. It is respectful to clinicians, technically correct, and it
+  is the exact reason a longitudinal system is the right answer.
+
+C2. NAMED COGNITIVE FAILURE MODES
+
+  ANCHORING — fixing on the initial impression (e.g. "acidity") and failing to
+    adjust as new information arrives.
+  PREMATURE CLOSURE — accepting a diagnosis before it is fully verified; the
+    single most common cognitive contributor to diagnostic error.
+  AVAILABILITY HEURISTIC — judging likelihood by what comes to mind easily. In
+    a high-TB-burden district, a persistent cough is "TB" long before it is
+    "lung cancer."
+  ATTRIBUTION / FRAMING BIAS — attributing symptoms to a known condition or to
+    the patient's demographic ("she's young", "he's a smoker, of course he
+    coughs").
+  CONTINUITY FAILURE — the patient sees a different provider each time (a
+    quack/RMP, then a PHC MO, then a private clinic). Each provider restarts
+    from zero. This is the dominant mechanism in rural India and is NOT a
+    cognitive bias at all — it is an INFORMATION ARCHITECTURE failure.
+  SAFETY-NETTING FAILURE — the clinician intends "come back if it doesn't
+    settle" but it is never documented, never timed, and never followed up.
+
+  AIRA's design answer, stated crisply:
+    "We do not try to out-diagnose the doctor. We fix the two failures that are
+     not clinical at all: the patient has no memory of their own care, and
+     nobody sets a timer on 'come back if it doesn't settle.' We supply both."
+
+C3. INDIA-SPECIFIC CONFOUNDERS (know these, they show local depth)
+
+  - High TB prevalence -> persistent cough / weight loss / haemoptysis are
+    anchored to TB. Anti-TB therapy is often given empirically for 2–6 months.
+    A lung cancer can lose half a year to this.
+  - Oral lesions are attributed to "ulcer from spicy food" or trauma from a
+    sharp tooth; treated with topical agents repeatedly.
+  - Post-coital / irregular bleeding attributed to "hormonal problem" or
+    infection; cervical cancer commonly presents this way.
+  - Breast lumps attributed to fibroadenoma or lactation-related change,
+    especially in younger women (Indian breast cancer peaks ~a decade earlier
+    than in Western populations).
+  - A large share of first contact is with informal/unqualified providers
+    (RMPs, pharmacists, traditional healers) who cannot investigate at all and
+    leave no record.
+  - Fear and fatalism: "cancer = death sentence" beliefs suppress help-seeking,
+    which is exactly why your tone must be non-alarming. This is a design
+    requirement, not politeness.
+
+
+================================================================================
+PART D — SCREENING SCIENCE
+================================================================================
+
+Most hackathon teams say "screening" without knowing what it means. If a
+clinician judge is on the panel, this section is where you either win or lose.
+
+D1. THE DISTINCTION EVERY TEAM MISSES
+
+  WHO draws a sharp line between two different things:
+
+  EARLY DIAGNOSIS  — applies to people WITH SYMPTOMS. The goal is to shorten
+    the interval from symptom onset to diagnosis and treatment. Appropriate at
+    ALL resource levels.
+
+  SCREENING        — applies to people WITHOUT SYMPTOMS (asymptomatic target
+    population). Testing an entire defined population to find disease before it
+    declares itself. Only justified when a whole programme exists: recall,
+    diagnosis, treatment, follow-up, quality assurance.
+
+  AIRA DOES BOTH, AND YOU SHOULD SAY SO EXPLICITLY:
+    - Persistence Clock + Loop Detector + Handoff Card = EARLY DIAGNOSIS arm
+    - Screening Passport                               = SCREENING arm
+  Making this distinction out loud immediately marks you as the team that read
+  the literature.
+
+D2. WILSON & JUNGNER CRITERIA (1968, WHO) — the canonical screening test
+
+  A condition is worth screening for if, broadly:
+    1. The condition is an important health problem
+    2. There is an accepted treatment
+    3. Facilities for diagnosis and treatment are available
+    4. There is a recognisable latent or early symptomatic stage
+    5. There is a suitable, acceptable test
+    6. The natural history is adequately understood
+    7. There is an agreed policy on whom to treat
+    8. Case-finding is cost-balanced
+    9. Case-finding is continuous, not a one-off project
+
+  Point 3 and 9 are the ones India struggles with, and the ones your ASHA
+  dashboard addresses.
+
+D3. THE THREE BIASES YOU MUST BE ABLE TO DEFINE
+
+  If a judge asks "how do you know early detection actually helps?" — this is
+  the answer they're testing for.
+
+  LEAD-TIME BIAS
+    Detecting a cancer earlier automatically makes survival-from-diagnosis look
+    longer, even if the person dies on exactly the same date. You have added
+    "lead time," not life. This is why screening programmes are evaluated on
+    MORTALITY, not on survival time.
+
+  LENGTH-TIME BIAS
+    Screening preferentially catches slow-growing tumours (they spend longer in
+    the detectable pre-clinical phase), which have better prognosis anyway. This
+    inflates apparent screening benefit.
+
+  OVERDIAGNOSIS
+    Detecting disease that would never have caused symptoms or death in the
+    person's lifetime. Leads to overtreatment — real harm, no benefit. This is
+    the strongest argument against indiscriminate screening.
+
+  HOW AIRA ANSWERS THIS — memorise:
+    "We do not invent screening recommendations. We route people into
+     screening programmes that national and WHO guidance has already judged
+     to be net-beneficial, at the ages and intervals those guidelines specify.
+     Our contribution is COMPLIANCE and TIMING, not a new claim about benefit.
+     That is deliberate — it is how we avoid overdiagnosis."
+
+  That answer is bulletproof.
+
+D4. TEST PERFORMANCE — AND WHY PPV COLLAPSES
+
+  SENSITIVITY = TP/(TP+FN)  — of those with disease, how many we catch.
+  SPECIFICITY = TN/(TN+FP)  — of those without, how many we correctly clear.
+  PPV = TP/(TP+FP)          — of those we flag, how many actually have it.
+  NPV = TN/(TN+FN)          — of those we clear, how many are truly clear.
+
+  CRITICAL: sensitivity and specificity are properties of the TEST. PPV and NPV
+  depend on PREVALENCE. At low prevalence, PPV collapses.
+
+  Worked example — say it on stage, it is devastatingly effective:
+    Test: 90% sensitivity, 95% specificity. Disease prevalence 0.5%.
+    Population 100,000 -> 500 have cancer, 99,500 do not.
+      True positives  = 0.90 x 500    = 450
+      False positives = 0.05 x 99,500 = 4,975
+      PPV = 450 / (450 + 4,975) = 8.3%
+    A 95%-specific test still produces 11 false alarms for every true one.
+
+  THE DESIGN CONSEQUENCE FOR AIRA — state this as a deliberate choice:
+    "Because of this, AIRA is engineered for HIGH SENSITIVITY AND HIGH NPV, and
+     it never outputs a diagnosis. Its positive output is 'this warrants
+     evaluation' — an action that costs a clinic visit — not 'you have cancer.'
+     We deliberately accept low PPV because the cost asymmetry demands it:
+     a false positive costs one consultation; a false negative costs a stage."
+
+D5. THE NICE 3% RULE — the single most useful number in this project
+
+  NICE guideline NG12 ("Suspected cancer: recognition and referral", 2015,
+  England) restructured cancer referral around an explicit RISK THRESHOLD:
+
+    If a symptom/sign combination carries a >= 3% POSITIVE PREDICTIVE VALUE for
+    cancer, that patient should enter an urgent (2-week-wait) suspected-cancer
+    pathway or urgent direct-access investigation.
+
+  Before 2015, thresholds were implicit and mostly above 5%. The guideline
+  development group lowered it to 3% explicitly to catch more cancers earlier,
+  accepting the cost. Exceptions exist (notably children/young people, where
+  the threshold is lower still).
+
+  NG12 also mandates SAFETY NETTING for patients who do NOT meet the threshold
+  but have concerning symptoms — documented "come back if..." advice.
+
+  WHY THIS MATTERS ENORMOUSLY TO YOU:
+    1. It proves a real national health system already accepts an EXPLICIT,
+       QUANTIFIED, LOW risk threshold for escalation. Your system is not
+       inventing a philosophy — it is implementing an existing, published one.
+    2. NG12 is FREE, PUBLIC, structured by symptom and age, and directly
+       encodable as JSON rules. It is the best available source for your
+       Persistence Clock safe-windows and referral triggers.
+    3. "Safety netting" is literally the clinical name for the thing AIRA
+       automates. USE THAT PHRASE. Say: "AIRA is automated, longitudinal,
+       patient-held safety netting." A clinician judge will sit up.
+
+  Note for honesty: NG12 is a UK guideline. For India, pair it with ICMR/NHM
+  operational guidance (below) and say you use NG12 for symptom-level referral
+  thresholds and Indian guidance for population screening — and that the
+  ruleset is versioned and swappable per jurisdiction. That is a strength
+  (configurable), not a weakness.
+
+D6. THE INDIAN AND WHO SCREENING GUIDANCE YOU SHOULD ENCODE
+
+  ICMR / NHM — Operational Framework: Management of Common Cancers, and the
+  NP-NCD programme. Population-based screening targets ADULTS 30 YEARS AND
+  ABOVE for three cancers:
+      ORAL     — oral visual examination
+      BREAST   — clinical breast examination (CBE)
+      CERVICAL — visual inspection with acetic acid (VIA)
+  Nominally at ~5-year intervals, delivered through Health & Wellness Centres.
+
+  WHO cervical cancer elimination strategy — the "90-70-90" targets by 2030:
+      90% of girls fully HPV-vaccinated by age 15
+      70% of women screened with a high-performance test by 35 and again by 45
+      90% of women with cervical disease receiving treatment
+  WHO now recommends HPV DNA testing as the preferred primary screening test.
+
+  USPSTF — useful as an international reference set (mammography, cervical
+  cytology/HPV, colorectal from 45, lung CT for heavy smokers). Use as fallback
+  and for the "configurable per jurisdiction" argument.
+
+D7. THE STATISTIC THAT SHOULD BE ON A SLIDE BY ITSELF
+
+  NFHS-5 (National Family Health Survey, 2019–21) — % of women who have EVER
+  been screened:
+
+        CERVICAL CANCER  ................  1.9%
+        BREAST CANCER    ................  0.9%
+        ORAL CANCER      ................  0.9%
+
+  Best-performing states: Tamil Nadu (cervical 9.8%, breast 5.6%), Puducherry
+  (7.4% / 4.2%), Mizoram (6.9% / 2.7%). Andaman & Nicobar highest for oral among
+  women (10.1%). Poorer wealth quintiles screen significantly less.
+  Source: J Family Med Prim Care, "Status of cancer screening in India: an alarm
+  signal from NFHS-5", 2022/2023.
+
+  THE LINE TO SAY:
+    "India has a national cancer screening programme. Coverage is under two
+     percent. The policy is not missing — the LAST MILE is missing. AIRA is
+     built for the last mile."
+
+  That reframes your project from "new idea" to "delivery layer for existing
+  national policy," which is exactly what makes it adoptable by government.
+
+
+================================================================================
+PART E — THE INDIAN HEALTH SYSTEM: WHERE AIRA PLUGS IN
+================================================================================
+
+Knowing this is what separates a student project from a deployable one.
+
+E1. THE RURAL PUBLIC HEALTH STRUCTURE (know the ladder)
+
+    Household / village
+        |
+    ASHA (Accredited Social Health Activist)
+        - community health volunteer, ~1 per 1,000 population
+        - performs household enumeration and risk assessment
+        - INCENTIVE-BASED pay -> anything you build must reduce her workload,
+          not add to it. Critical design constraint.
+        |
+    Sub-Centre / Ayushman Bharat HEALTH & WELLNESS CENTRE (AB-HWC)
+        - staffed by ANM (Auxiliary Nurse Midwife) and CHO (Community Health
+          Officer)
+        - this is where VIA / CBE / oral visual exam actually happen
+        |
+    PHC  (Primary Health Centre)      - Medical Officer, ~30,000 population
+        |
+    CHC  (Community Health Centre)    - specialists, ~120,000 population
+        |
+    District Hospital
+        |
+    Tertiary / Regional Cancer Centre (RCC)
+
+E2. CBAC — THE FORM AIRA SHOULD EXTEND
+
+  The COMMUNITY BASED ASSESSMENT CHECKLIST is the existing paper instrument
+  ASHAs use, door to door, for everyone aged 30+ (18+ in Tamil Nadu), covering
+  five NCDs: hypertension, diabetes, and ORAL, BREAST and CERVICAL cancers.
+
+  Structure: (1) demographics, (2) lifestyle — tobacco, alcohol, physical
+  activity, diet, (3) medical history and symptoms. Risk factors are scored;
+  those above threshold are mobilised to a screening camp at the nearest
+  Sub-Centre/HWC.
+
+  ***THE SINGLE MOST STRATEGIC SENTENCE IN YOUR ENTIRE PITCH:***
+
+    "CBAC is a one-time, paper, cross-sectional snapshot. AIRA is CBAC made
+     longitudinal, digital, and self-escalating. We are not asking India to
+     adopt a new instrument — we are asking it to give an instrument it already
+     mandates a MEMORY."
+
+  Learn that. It converts "another health app" into "a national programme
+  upgrade." It answers the 'government adoption' line in the Expected Impact
+  section directly.
+
+  Related: the CPHC-NCD application (the existing digital NCD system used by
+  ANMs/CHOs) already exists — position AIRA as interoperable with it, not
+  competing with it.
+
+E3. NATIONAL DIGITAL RAILS TO NAME-DROP (accurately)
+
+  ABDM — Ayushman Bharat Digital Mission. National digital health architecture.
+  ABHA — Ayushman Bharat Health Account, the 14-digit health ID. Say: "symptom
+         timelines are keyed to ABHA so the longitudinal record survives a
+         change of provider." That is exactly the continuity failure from C2.
+  eSanjeevani — the national teleconsultation platform. Your Handoff Card and
+         oral images are precisely the payload a teleconsult needs.
+  Bhashini — the Government of India national language translation/ASR mission
+         (22 scheduled languages). Use this for your voice + language layer
+         instead of a foreign API. It is a genuine differentiator and an
+         adoption argument.
+  DPDP Act 2023 — Digital Personal Data Protection Act. Health data is
+         sensitive; consent, purpose limitation and data minimisation apply.
+         Your offline-first, on-device-inference design is a PRIVACY argument,
+         not just a connectivity one. Say that.
+
+E4. THE REAL CONSTRAINTS OF THE LAST MILE
+
+  - Connectivity is intermittent, not absent. Design for "eventually connected,"
+    not "online" or "offline" — a sync queue with conflict resolution.
+  - Devices are shared, low-end Android, limited storage. Your app must be small.
+  - Literacy: functional literacy is far from universal; VOICE AND PICTOGRAMS
+    are not a nice-to-have, they are the primary interface for a real fraction
+    of users.
+  - The ASHA is the actual user for population coverage; the individual is the
+    user for self-advocacy. TWO PERSONAS. Build both.
+  - Any added data-entry burden on an incentive-paid worker will kill adoption.
+    Design AIRA to REPLACE the paper CBAC, not sit beside it.
+
+
+================================================================================
+PART F — THE AI/ML LANDSCAPE
+================================================================================
+
+F1. PRIOR ART YOU MUST KNOW (so you can say what's new)
+
+  QCANCER (Hippisley-Cox & Coupland, QResearch / Univ. of Nottingham)
+    - Risk algorithms estimating the absolute risk that a patient has a
+      currently UNDIAGNOSED cancer, from symptoms + risk factors.
+    - Derived and validated on UK QResearch primary-care records: 452 practices
+      for derivation, 224 for validation. Separate algorithms for men and women
+      (BJGP 2013).
+    - Features: red-flag symptoms (weight loss, abdominal pain, indigestion,
+      dysphagia, abnormal bleeding, lumps), general symptoms (fatigue,
+      constipation), and risk factors (age, family history, smoking, alcohol,
+      deprivation, BMI, comorbidities).
+    - Used within the NHS to flag patients at high risk of undiagnosed cancer.
+
+    THIS IS YOUR STRONGEST CREDIBILITY ANCHOR. It proves the core idea —
+    symptom + risk-factor models predicting undiagnosed cancer — is validated,
+    deployed national practice, not speculation.
+
+    THEN STATE THE GAP HONESTLY:
+      "QCancer is cross-sectional and requires a complete electronic GP record.
+       It answers 'given this snapshot, what is the risk?' It cannot answer
+       'this person has been treated twice and is not improving.' And it cannot
+       run where there is no GP record at all. AIRA is longitudinal,
+       patient-held, and works with no prior record and no network."
+
+    That is a precise, defensible novelty claim. Much better than "we use AI."
+
+  OTHER PRIOR ART WORTH ONE LINE EACH:
+    - Risk models: Gail model (breast), Tyrer-Cuzick/IBIS (breast, incl. family
+      history), PLCO_m2012 (lung). These estimate FUTURE risk in asymptomatic
+      people — different task from QCancer's "currently undiagnosed."
+      Know the distinction: RISK PREDICTION (future) vs CASE-FINDING (present).
+    - Symptom checkers (Ada, Babylon, Isabel) — general triage, not
+      cancer-specific, not longitudinal, repeatedly criticised for poor
+      real-world accuracy and lack of validation. Do not compare yourself
+      favourably to them without evidence; instead say your decisions are
+      guideline-deterministic, unlike LLM symptom chat.
+    - Oral lesion CNNs — a real, published literature on smartphone-based oral
+      lesion classification for low-resource screening. Your camera module sits
+      in an established research line.
+
+F2. MODEL SELECTION — AND THE ARGUMENT FOR IT
+
+  THE REQUIREMENT: the problem statement says "ethical and EXPLAINABLE."
+  That word should drive your architecture, and you should say so.
+
+  RECOMMENDED PRIMARY MODEL: EXPLAINABLE BOOSTING MACHINE (EBM)
+    - A Generalised Additive Model with pairwise interactions (GA2M), from
+      Microsoft Research's InterpretML.
+    - Form:  g(E[y]) = b0 + SUM_i f_i(x_i) + SUM_ij f_ij(x_i, x_j)
+    - It is a GLASS BOX: each feature's contribution is an exact, plottable
+      function. Not a post-hoc approximation.
+    - Accuracy is typically competitive with random forests / boosted trees on
+      tabular clinical data.
+
+    THE STAGE ARGUMENT (this is a genuinely strong technical position):
+      "We deliberately did not use a black box with SHAP explanations bolted on.
+       SHAP is an APPROXIMATION of a model you cannot inspect. In a clinical
+       decision-support system, we wanted the explanation to BE the model. An
+       Explainable Boosting Machine gives us an exact per-feature contribution
+       curve — we can show a clinician the precise shape of how risk varies with
+       age, and they can audit it. Interpretability here is a safety property,
+       not a UI feature."
+
+    If a judge pushes on accuracy: EBMs are competitive on tabular data, and in
+    this domain calibration matters more than raw discrimination (see F4).
+
+  CONTRAST WITH WHAT NOT TO SAY:
+    Drop "transformer-based NLP for symptom classification" from the old deck.
+    A transformer to map "mouth sore" to an ontology term is over-engineering
+    that breaks offline and adds latency. Use a small multilingual sentence
+    embedding model (e.g. a MiniLM/LaBSE-class encoder) running IN-BROWSER via
+    onnxruntime-web for free-text -> symptom-ontology matching, and say exactly
+    that. Right-sized engineering reads as maturity.
+
+  THE ARCHITECTURAL PRINCIPLE TO STATE OUT LOUD:
+      "The RULES make the decision. The MODEL ranks and prioritises. The LLM
+       only phrases the result in the user's language. No generative model is
+       ever in the decision path."
+    This single sentence answers the ethics, explainability, safety AND
+    hallucination questions simultaneously. It is the most valuable sentence in
+    your architecture section.
+
+F3. THE DATA PROBLEM — AND THE HONEST ANSWER
+
+  There is NO large public labelled dataset of Indian primary-care symptom
+  trajectories with cancer outcomes. Pretending otherwise will get you caught.
+
+  The defensible approach — say it in these words:
+
+  "We built an EPIDEMIOLOGICALLY-GROUNDED SYNTHETIC COHORT. Rather than
+   inventing data, we encoded published conditional probabilities — symptom PPVs
+   from Hamilton et al., age/sex incidence from GLOBOCAN and the NCRP, stage
+   distributions from Indian registries, and consultation-count distributions
+   from NHS audit data — into a generative simulator, then sampled trajectories
+   from it. The model learns the epidemiology that the literature already
+   established. We are explicit that this validates the PIPELINE, not clinical
+   performance; clinical validation requires a prospective cohort, and we say so
+   on the slide."
+
+  That is a mature answer. Judges respect stated limitations far more than
+  inflated accuracy claims.
+
+  REAL DATA YOU CAN ACTUALLY USE:
+    - SEER (US NCI) — public, registry-scale, has stage/site/age/survival. Great
+      for the stage->survival impact model and for grounding your "stage shift"
+      claim quantitatively.
+    - NCRP / ICMR published reports — Indian incidence and stage priors.
+    - NFHS-5 microdata — screening coverage and its socioeconomic gradient;
+      useful for the dashboard's equity view.
+    - Public oral lesion image sets (Mendeley "Oral Cancer (Lips and Tongue)
+      images"; Kaggle/Roboflow OSCC and oral lesion collections) for the vision
+      module. Report the exact size and class balance. Do not oversell.
+
+F4. METRICS — GET THIS RIGHT OR LOSE THE ML JUDGE
+
+  NEVER REPORT ACCURACY. With ~0.5% prevalence, a model that says "no cancer"
+  every time is 99.5% accurate and completely useless. If you show an accuracy
+  number, an ML judge will end you.
+
+  REPORT THESE INSTEAD:
+    - SENSITIVITY / RECALL at a fixed operating point — your primary metric.
+    - SPECIFICITY and the resulting referral volume (workload cost).
+    - PPV and NPV *at stated prevalence* — always state the prevalence.
+    - AUROC — discrimination. Fine, but not sufficient alone.
+    - AUPRC — far more informative than AUROC under heavy class imbalance.
+    - CALIBRATION — this is the one that matters most clinically and the one
+      teams forget:
+        * Calibration curve / reliability diagram
+        * Brier score
+        * Expected Calibration Error (ECE)
+      A model that says "12% risk" must be right about 12 times in 100.
+      Discrimination without calibration is unusable for a threshold-based
+      referral rule like NICE's 3%.
+    - DECISION CURVE ANALYSIS (Vickers & Elkin) — plots NET BENEFIT against
+      threshold probability. It is THE accepted way to show a clinical
+      prediction model is actually useful, because it weighs true positives
+      against false positives at clinically relevant thresholds. If you produce
+      one decision curve, you will be the only team that did.
+
+  ALSO REPORT: subgroup performance by age, sex, and urban/rural — this is your
+  algorithmic-fairness evidence (see G4).
+
+F5. THE THREE MODELS IN AIRA — KEEP THEM SEPARATE AND NAMED
+
+    MODEL 1 — GENERAL CASE-FINDING MODEL (the core)
+      Task:    multi-site cancer case-finding from age, sex, risk factors and
+               current symptom set.
+      Type:    Explainable Boosting Machine (glass box), calibrated.
+      Output:  per-site risk + overall "warrants investigation" flag +
+               exact per-feature contributions.
+      Precedent: QCancer.
+
+    MODEL 2 — TRAJECTORY / ESCALATION MODEL
+      Task:    given a SEQUENCE of care episodes, score the concern that this
+               trajectory is a delayed-diagnosis pathway.
+      Type:    deterministic rules for the hard flags (auditable, guideline-
+               cited) + a small sequence model (GRU or temporal CNN) producing
+               a continuous "trajectory concern" score with per-episode
+               attention weights as the explanation.
+      Output:  Loop Level (L1/L2/L3) + reasoning trail.
+      Novelty: THIS IS THE PART THAT DOES NOT EXIST IN PRIOR ART.
+
+    MODEL 3 — ORAL LESION VISION MODEL (separate feature)
+      Task:    triage an oral cavity image into a referral urgency band.
+      Type:    MobileNetV3 / EfficientNet-Lite transfer learning, exported to
+               ONNX (browser) and TFLite (Raspberry Pi).
+      Output:  GREEN / AMBER / RED triage band + confidence + Grad-CAM overlay.
+      Framing: TRIAGE, never diagnosis. A lesion is diagnosed by BIOPSY.
+               Say that sentence if asked. It is the correct answer.
+
+F6. CLASS IMBALANCE AND THRESHOLD HANDLING (be ready)
+
+  Techniques to name if asked: class weighting, focal loss, stratified sampling,
+  SMOTE (mention but note it can distort calibration — a sophisticated caveat),
+  and — most importantly — THRESHOLD SELECTION driven by the cost asymmetry
+  rather than by maximising F1. Tie the threshold to NICE's 3% PPV rule and you
+  have a clinically justified operating point rather than an arbitrary one.
+  That is a much better answer than "we used SMOTE."
+
+
+================================================================================
+PART G — ETHICS, FAILURE MODES, REGULATION
+================================================================================
+
+G1. THE ASYMMETRIC HARMS — KNOW WHICH IS WORSE
+
+  FALSE POSITIVE: anxiety, cost of an unnecessary visit or test, occasionally
+    an invasive procedure with real complication risk, and — in a poor household
+    — lost wages and travel cost. Real harm. Not catastrophic.
+
+  FALSE NEGATIVE: FALSE REASSURANCE. This is the danger that should keep you
+    up at night, because AIRA could actively make things WORSE than no system.
+    A person with a genuine red-flag symptom who is told "low risk" may delay
+    longer than they otherwise would have.
+
+  YOUR MITIGATIONS — have all four ready:
+    1. HARD RED-FLAG OVERRIDE: a fixed list of symptoms (dysphagia,
+       haemoptysis, post-menopausal bleeding, a lesion persisting past its safe
+       window, a fixed breast lump with skin change, etc.) escalates
+       IMMEDIATELY, bypassing any model score. The ML can only ESCALATE, never
+       DE-ESCALATE below the rule floor.
+    2. NO "ALL CLEAR" OUTPUT EVER. The lowest band is worded as "no action
+       indicated right now — return if anything changes or persists," with a
+       scheduled re-check date. Never "you are fine."
+    3. SENSITIVITY-FIRST operating point, explicitly justified by cost
+       asymmetry.
+    4. Every screen carries the decision-support disclaimer.
+
+  Saying "false reassurance is our most dangerous failure mode, and here is how
+  we engineered against it" is a maturity signal almost no team will show.
+
+G2. AUTOMATION BIAS
+
+  Clinicians can over-trust an algorithm's output and under-weigh their own
+  judgement — and the reverse, alert fatigue, where too many flags cause all
+  flags to be ignored. Mitigations: show reasoning not just a score, require
+  clinician override with a captured reason (which becomes training signal),
+  and tune flag volume so the dashboard queue stays actionable. Say "we
+  budget for a maximum flag rate per ASHA per week" — that is an operations
+  answer, and it is the right one.
+
+G3. THE DECISION-SUPPORT BOUNDARY (a hard constraint in the PS)
+
+  Regulatory context, stated correctly:
+    - SOFTWARE AS A MEDICAL DEVICE (SaMD) — the IMDRF framework classifies
+      software by (a) the significance of the information it provides and
+      (b) the seriousness of the condition.
+    - In India, medical devices including certain software are regulated by
+      CDSCO under the Medical Devices Rules 2017.
+    - Software that INFORMS clinical management sits in a lower risk class than
+      software that DRIVES or DIAGNOSES. AIRA is deliberately built as
+      "informs" — it recommends a guideline-defined next step to a human, and a
+      human decides.
+
+  ENGINEERING THAT ENFORCES THE BOUNDARY (not just a disclaimer):
+    - Output vocabulary is restricted to actions and risk tiers, never disease
+      names as conclusions. "Warrants evaluation," "screening due,"
+      "urgent referral indicated" — never "you likely have cancer."
+    - No probability of malignancy is ever shown to a lay user.
+    - Every recommendation displays its GUIDELINE CITATION, so the authority is
+      the guideline, not the algorithm.
+    - The Handoff Card is addressed to a CLINICIAN and frames AIRA as evidence,
+      not verdict.
+  Say: "the constraint is enforced in the output layer, not in a footer."
+
+G4. ALGORITHMIC EQUITY
+
+  Risks specific to this build:
+    - Training on Western data (SEER, UK primary care) transfers imperfectly to
+      Indian epidemiology — Indian breast cancer peaks roughly a decade earlier;
+      oral cancer risk profile is dominated by smokeless tobacco rather than
+      smoking; TB co-prevalence changes the meaning of respiratory symptoms.
+      SAY THIS. It shows you know your data's provenance is a limitation.
+    - Vision model trained largely on lighter-skinned or clinical-photography
+      datasets may underperform on the actual field population and lighting.
+      Mitigation: standardised illumination (your ESP32 LED ring), report
+      subgroup performance, and state the limitation.
+    - Digital access itself is unequal — the poorest have the worst access to
+      the tool designed to help them. Mitigation: ASHA-mediated use and an
+      IVR/SMS path, so the individual does not need a smartphone.
+
+G5. PRIVACY
+
+  DPDP Act 2023 principles: consent, purpose limitation, data minimisation,
+  storage limitation. Design answers: on-device inference (raw data never has to
+  leave), local encryption, explicit consent at onboarding with a
+  voice-explained plain-language notice for low-literacy users, and the ability
+  to use the app anonymously without ABHA linkage. Note: a low-literacy user
+  cannot give meaningful consent from a wall of text — voice consent is an
+  ETHICS feature, not just an accessibility one.
+
+
+================================================================================
+PART H — STAGE ARGUMENTS AND ANTICIPATED QUESTIONS
+================================================================================
+
+H1. THE FIVE SENTENCES TO MEMORISE VERBATIM
+
+  1. "India's cancer mortality-to-incidence ratio is around 0.65 against roughly
+      0.4 in high-income countries. That gap is not mainly about treatment. It
+      is about stage at presentation."
+
+  2. "Rectal bleeding predicts colorectal cancer about two times in a hundred.
+      The doctor who says 'it's probably piles' is right 98 times out of 100.
+      The error is not the first benign explanation — it is the second and third,
+      when nobody updates on the fact that the benign explanation has failed."
+
+  3. "In the NHS — universal coverage, electronic records, a national two-week
+      referral standard — one in five cancer patients still saw their GP three
+      or more times before referral. Now remove all of those safeguards. That is
+      rural India."
+
+  4. "India already has a national cancer screening programme for adults over
+      thirty. NFHS-5 puts coverage at 1.9% for cervical and 0.9% for breast and
+      oral. The policy is not missing. The last mile is."
+
+  5. "CBAC is a one-time paper snapshot. AIRA is CBAC made longitudinal,
+      digital and self-escalating. We are not asking India to adopt a new
+      instrument — we are giving an instrument it already mandates a memory."
+
+H2. LIKELY JUDGE QUESTIONS AND YOUR ANSWERS
+
+  Q: "Isn't this just another symptom checker?"
+  A: "No. A symptom checker is cross-sectional — it asks what your symptoms mean
+      today. Our core novelty is the second-order signal: what does it mean that
+      this symptom has now SURVIVED TWO FAILED TREATMENTS and passed its
+      guideline safe window? No deployed system computes that, because no system
+      holds the longitudinal patient-held record. Also, our decisions are
+      deterministic and guideline-cited, not generated."
+
+  Q: "How do you know your model is any good with no real data?"
+  A: "We don't claim clinical performance and we say so on the slide. We built an
+      epidemiologically-grounded synthetic cohort by encoding published
+      conditional probabilities — Hamilton's symptom PPVs, GLOBOCAN and NCRP
+      incidence, Indian stage distributions, NHS consultation-count
+      distributions — and sampled from it. That validates the pipeline and the
+      logic. Clinical validation requires a prospective cohort with registry
+      linkage, which is our stated next step. What IS validated today is the
+      rule layer, because it is a direct encoding of NICE NG12 and ICMR
+      operational guidance."
+
+  Q: "What if you're wrong and someone doesn't go to a doctor because of you?"
+  A: "False reassurance is our most dangerous failure mode and we engineered
+      against it specifically. Three things: we never output an all-clear — the
+      lowest band is 'no action indicated now, return if anything changes,' with
+      a scheduled re-check. A hard-coded red-flag list escalates immediately and
+      the ML cannot de-escalate below that rule floor. And we run at a
+      deliberately sensitivity-first operating point because a false positive
+      costs one consultation while a false negative costs a stage."
+
+  Q: "Aren't you going to cause mass panic and overload the PHCs?"
+  A: "Two answers. On tone — we never show a cancer probability to a lay user;
+      the output is an action and a timeframe, and the language is calm and
+      specific. On load — we do not lower the referral bar, we implement NICE's
+      published 3% PPV threshold, the same bar the NHS already accepts. And the
+      dashboard is a PRIORITISED QUEUE with a flag-rate budget, so a health
+      worker gets a workable number of actions, not an undifferentiated alert
+      list."
+
+  Q: "Isn't more screening always good?"
+  A: "No, and that's important. Screening carries overdiagnosis — detecting
+      disease that would never have harmed the person — plus lead-time and
+      length-time bias, which make screening look better than it is. That is
+      exactly why we do NOT invent screening recommendations. We route people
+      into programmes that WHO and ICMR have already judged net-beneficial, at
+      the ages and intervals they specify. Our contribution is compliance and
+      timing, not a new claim about benefit."
+
+  Q: "Why not just use a large language model for all of it?"
+  A: "Because a generative model in the decision path is unauditable and can
+      hallucinate a clinical recommendation. Our architecture is explicit: the
+      RULES make the decision, the model ranks and prioritises, and the LLM only
+      phrases the already-made decision in the user's language. That is also what
+      lets the whole decision path run offline on a phone."
+
+  Q: "Why an EBM instead of XGBoost with SHAP?"
+  A: "SHAP is a post-hoc approximation of a model you cannot inspect. An
+      Explainable Boosting Machine is a glass-box GAM — each feature's
+      contribution is an exact plottable function a clinician can audit. On
+      tabular clinical data the accuracy is competitive, and in this domain
+      calibration matters more than raw discrimination anyway, because our
+      referral rule is a probability threshold."
+
+  Q: "What's your business/deployment model?"
+  A: "Public health, not consumer. The deployment unit is a Health & Wellness
+      Centre: the ASHA replaces her paper CBAC with AIRA, the CHO gets the
+      prioritised queue, and the district gets coverage and stage-shift
+      analytics. Interoperable with ABDM/ABHA and the existing CPHC-NCD
+      application. Cost per screened adult is the metric a state health
+      department would actually evaluate us on."
+
+  Q: "How is this different from QCancer?"
+  A: "QCancer is the closest prior art and it validates our premise — it's
+      deployed in the NHS. But it is cross-sectional and requires a complete
+      electronic GP record. It answers 'given this snapshot, what is the risk.'
+      It cannot answer 'this person has been treated twice and is not
+      improving,' and it cannot run where there is no GP record and no network.
+      We are longitudinal, patient-held, and offline."
+
+  Q: "What does the hardware actually add?"
+  A: "Three specific things, not decoration. The Pi is an offline server so a
+      village with no internet still gets the full application over local
+      Wi-Fi. The IMU standardises capture — it blocks the shutter on motion blur
+      and guides the operator to fixed view angles, so an untrained worker
+      produces consistent images, which is the single biggest cause of field
+      vision-model failure. The ESP32 fixes the illumination colour temperature,
+      because inconsistent lighting is the second biggest cause."
+
+H3. THE THINGS THAT WILL LOSE YOU THE ROOM — DON'T DO THEM
+
+  - Reporting accuracy on an imbalanced problem.
+  - Saying "our AI detects cancer." Say "flags for evaluation."
+  - Claiming a clinical validation you did not do.
+  - Using "transformer" or "deep learning" as a selling point with no reason.
+  - Conflating screening (asymptomatic) with early diagnosis (symptomatic).
+  - Showing a cancer probability to a simulated patient in the demo.
+  - Blaming doctors. Blame the information architecture.
+
+
+================================================================================
+PART I — VOCABULARY SHEET
+================================================================================
+
+  SAY THIS                              NOT THIS
+  ------------------------------------  ----------------------------------------
+  case-finding / flags for evaluation   detects cancer
+  decision support                      diagnosis
+  stage shift                           saves lives
+  diagnostic interval / primary care    delay
+    interval (Aarhus)
+  safety netting (automated,            reminders
+    longitudinal, patient-held)
+  positive predictive value at stated   accuracy
+    prevalence
+  calibration + decision curve          "our model is 94% accurate"
+  triage band (green/amber/red)         result
+  guideline-cited, deterministic rules  AI decides
+  glass-box model (EBM/GA2M)            explainable AI (vague)
+  epidemiologically-grounded synthetic  synthetic data
+    cohort
+  the last mile of an existing          a new health app
+    national programme
+
+  TERMS TO BE ABLE TO DEFINE ON DEMAND:
+    PPV, NPV, sensitivity, specificity, prevalence dependence of PPV
+    Lead-time bias, length-time bias, overdiagnosis
+    Wilson & Jungner criteria
+    Appraisal / help-seeking / diagnostic / primary care / secondary care
+      intervals (Aarhus Statement, Model of Pathways to Treatment)
+    Anchoring, premature closure, availability heuristic
+    Safety netting; the NICE NG12 3% PPV threshold
+    Calibration, Brier score, expected calibration error
+    AUROC vs AUPRC and why AUPRC matters under imbalance
+    Decision curve analysis / net benefit
+    GA2M / Explainable Boosting Machine
+    SaMD (Software as a Medical Device); CDSCO; DPDP Act 2023
+    CBAC, AB-HWC, ASHA, ANM, CHO, ABHA, ABDM, NP-NCD, VIA, CBE
+    Catastrophic health expenditure; distress financing
+    Mortality-to-incidence ratio
+
+
+================================================================================
+PART J — SOURCE LIST
+================================================================================
+
+  BURDEN AND STAGE
+   - IARC/WHO GLOBOCAN 2022, India Fact Sheet.
+     https://gco.iarc.who.int/media/globocan/factsheets/populations/356-india-fact-sheet.pdf
+   - "Unveiling the cancer epidemic in India: a glimpse into GLOBOCAN 2022 and
+     past patterns", Lancet Regional Health SE Asia, 2025.
+   - Bray et al., "Global cancer statistics 2022", CA Cancer J Clin, 2024.
+   - "Sociodemographic Factors and Stage of Cancer at Diagnosis: A
+     Population-Based Study in South India", JCO Global Oncology, 2019.
+   - NCRP / ICMR, "Cancer Statistics 2020: Report from National Cancer Registry
+     Programme, India", JCO Global Oncology.
+   - ICMR-NICPR oral cancer page: https://cancerindia.org.in/oral-cancer/
+   - Statistics Canada, "Five-year cancer survival by stage at diagnosis in
+     Canada", 2023 (stage-specific survival).
+
+  DIAGNOSTIC DELAY FRAMEWORKS
+   - Weller D. et al., "The Aarhus statement: improving design and reporting of
+     studies on early cancer diagnosis", British Journal of Cancer, 2012.
+   - Scott S.E., Walter F.M. et al., "The Model of Pathways to Treatment",
+     British Journal of Health Psychology, 2013.
+   - Lyratzopoulos G. et al., pre-referral consultation analyses, BJGP 2016;
+     English Cancer Patient Experience Survey analyses.
+
+  SYMPTOM PREDICTIVE VALUES AND REFERRAL THRESHOLDS
+   - Hamilton W. et al., "Alarm symptoms in early diagnosis of cancer in primary
+     care: cohort study using General Practice Research Database", BMJ, 2007.
+   - Shapley M., Mansell G., Jordan J.L., Jordan K.P., "Positive predictive
+     values of >=5% in primary care for cancer: systematic review", BJGP, 2010.
+   - NICE NG12, "Suspected cancer: recognition and referral", 2015 (updated).
+     https://www.nice.org.uk/guidance/ng12
+   - "Is now the time to rethink risk thresholds in cancer referral
+     guidelines?", BJGP, 2025.
+
+  RISK MODELS
+   - Hippisley-Cox J., Coupland C., "Symptoms and risk factors to identify
+     women / men with suspected cancer in primary care: derivation and
+     validation of an algorithm", BJGP, 2013 (two papers).
+   - QResearch QCancer tools: https://www.qresearch.org/
+   - Nori H. et al., "InterpretML: A Unified Framework for Machine Learning
+     Interpretability" (Explainable Boosting Machine / GA2M).
+   - Vickers A.J., Elkin E.B., "Decision curve analysis: a novel method for
+     evaluating prediction models", Medical Decision Making, 2006.
+
+  INDIA SCREENING AND SYSTEM
+   - "Status of cancer screening in India: An alarm signal from the National
+     Family Health Survey (NFHS-5)", J Family Med Prim Care, 2022/23.
+   - "Female cancer screening in India: Results from NFHS-5 and the way
+     forward", J Family Med Prim Care, 2024.
+   - MoHFW/NHM, "Operational Framework: Management of Common Cancers".
+   - MoHFW, Community Based Assessment Checklist (CBAC) form.
+     https://ntep.in/node/4746/
+   - NHSRC, "Induction Training Module for Community Health Officers at
+     AB-HWC".
+   - WHO, "Global strategy to accelerate the elimination of cervical cancer"
+     (90-70-90 targets); WHO guideline on cervical screening (HPV DNA primary).
+   - Wilson J.M.G., Jungner G., "Principles and Practice of Screening for
+     Disease", WHO, 1968.
+
+  ECONOMICS
+   - "Disease-specific out-of-pocket and catastrophic health expenditure on
+     hospitalization in India", PLOS One, 2018.
+   - "Catastrophic health expenditure and distress financing of breast cancer
+     treatment in India: a longitudinal cohort study", International Journal for
+     Equity in Health, 2024.
+
+  REGULATION AND DATA
+   - IMDRF, "Software as a Medical Device (SaMD): Key Definitions" and risk
+     categorisation framework.
+   - CDSCO, Medical Devices Rules 2017 (India).
+   - Digital Personal Data Protection Act, 2023 (India).
+   - Ayushman Bharat Digital Mission (ABDM) / ABHA documentation.
+   - Bhashini (National Language Translation Mission), MeitY.
+
+================================================================================
+END. Read PART H out loud three times before you present.
+================================================================================

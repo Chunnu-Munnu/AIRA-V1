@@ -1,0 +1,117 @@
+{
+  "ruleset_version": "1.0.0",
+  "updated": "2026-09-03",
+  "description": "Screening entitlements under India's National Programme for Prevention and Control of Non-Communicable Diseases (NP-NCD). This file answers a question no symptom checker answers: 'what am I already entitled to, for free, and am I overdue?' Screening is population-level and asymptomatic. It is a completely separate track from the symptom ladder, and the two must never be confused on screen.",
+
+  "principle": "AIRA does not invent screening recommendations. It surfaces the ones the Government of India already offers and the patient does not know about. Every entry below maps to an existing free service at an Ayushman Bharat Health and Wellness Centre.",
+
+  "programmes": [
+    {
+      "id": "SCR_CBAC",
+      "name": { "en": "Annual NCD risk assessment (CBAC)", "hi": "वार्षिक एनसीडी जोखिम जांच", "kn": "ವಾರ್ಷಿಕ ಎನ್‌ಸಿಡಿ ಅಪಾಯ ಪರಿಶೀಲನೆ" },
+      "eligibility": { "min_age": 30, "max_age": null, "sex": "any" },
+      "interval_months": 12,
+      "test": "Community Based Assessment Checklist",
+      "where": "Sub-centre / Ayushman Bharat Health and Wellness Centre",
+      "who_performs": "ASHA or ANM",
+      "cost_to_patient": 0,
+      "patient_message": {
+        "en": "Everyone over 30 can get a free yearly health risk check at their nearest health centre. It takes about 15 minutes.",
+        "hi": "30 से ऊपर हर व्यक्ति को नजदीकी स्वास्थ्य केंद्र पर मुफ्त वार्षिक जोखिम जांच मिलती है। इसमें लगभग 15 मिनट लगते हैं।",
+        "kn": "30 ವರ್ಷ ಮೇಲ್ಪಟ್ಟ ಎಲ್ಲರಿಗೂ ಹತ್ತಿರದ ಆರೋಗ್ಯ ಕೇಂದ್ರದಲ್ಲಿ ಉಚಿತ ವಾರ್ಷಿಕ ಪರಿಶೀಲನೆ ಸಿಗುತ್ತದೆ. ಸುಮಾರು 15 ನಿಮಿಷ ಬೇಕು."
+      },
+      "citation": { "source": "NP-NCD", "section": "operational guidelines", "quote": "Population based screening for common NCDs including oral, breast and cervical cancer for all individuals aged 30 years and above, initiated through the Community Based Assessment Checklist administered by the ASHA." }
+    },
+    {
+      "id": "SCR_ORAL",
+      "name": { "en": "Oral cancer check", "hi": "मुंह के कैंसर की जांच", "kn": "ಬಾಯಿ ಕ್ಯಾನ್ಸರ್ ಪರೀಕ್ಷೆ" },
+      "eligibility": { "min_age": 30, "max_age": null, "sex": "any" },
+      "interval_months": 60,
+      "interval_months_if_risk": 12,
+      "risk_factors_shortening_interval": ["tobacco_smoking", "tobacco_chewing", "areca_nut", "alcohol_heavy"],
+      "test": "Oral visual examination",
+      "where": "Ayushman Bharat Health and Wellness Centre / PHC",
+      "who_performs": "Community Health Officer or Medical Officer",
+      "cost_to_patient": 0,
+      "patient_message": {
+        "en": "A health worker looks inside your mouth for a few minutes. It is free and it does not hurt. If you chew tobacco or gutka, you should have this every year instead of every five.",
+        "hi": "स्वास्थ्यकर्मी कुछ मिनट आपके मुंह के अंदर देखता है। यह मुफ्त है और दर्द नहीं होता। अगर आप तंबाकू या गुटखा खाते हैं तो हर साल कराएं।",
+        "kn": "ಆರೋಗ್ಯ ಕಾರ್ಯಕರ್ತರು ಕೆಲವು ನಿಮಿಷ ನಿಮ್ಮ ಬಾಯಿ ಒಳಗೆ ನೋಡುತ್ತಾರೆ. ಉಚಿತ, ನೋವಿಲ್ಲ. ತಂಬಾಕು ಅಥವಾ ಗುಟ್ಕಾ ಸೇವಿಸಿದರೆ ಪ್ರತಿ ವರ್ಷ ಮಾಡಿಸಿ."
+      },
+      "why_it_matters": "India accounts for roughly one third of the world's oral cancer cases. Oral cancer is one of very few cancers that can be seen with the naked eye at a curable stage, and yet 67% of Indian oral cancers present at stage III or IV.",
+      "citation": { "source": "NP-NCD", "section": "screening", "quote": "Oral visual examination for all individuals aged 30 years and above, once in five years." }
+    },
+    {
+      "id": "SCR_BREAST",
+      "name": { "en": "Breast examination", "hi": "स्तन जांच", "kn": "ಸ್ತನ ಪರೀಕ್ಷೆ" },
+      "eligibility": { "min_age": 30, "max_age": 65, "sex": "female" },
+      "interval_months": 60,
+      "interval_months_if_risk": 12,
+      "risk_factors_shortening_interval": ["family_history_breast", "family_history_ovary", "nulliparity", "late_menopause"],
+      "test": "Clinical breast examination",
+      "where": "Ayushman Bharat Health and Wellness Centre / PHC",
+      "who_performs": "Female health worker (ANM) or Community Health Officer",
+      "cost_to_patient": 0,
+      "patient_message": {
+        "en": "A female health worker examines your breasts. It is free, private, and takes five minutes. You can ask for a female worker and a closed room.",
+        "hi": "महिला स्वास्थ्यकर्मी जांच करती हैं। यह मुफ्त, निजी और पांच मिनट का है। आप महिला कर्मी और बंद कमरे की मांग कर सकती हैं।",
+        "kn": "ಮಹಿಳಾ ಆರೋಗ್ಯ ಕಾರ್ಯಕರ್ತೆ ಪರೀಕ್ಷಿಸುತ್ತಾರೆ. ಉಚಿತ, ಖಾಸಗಿ, ಐದು ನಿಮಿಷ. ಮಹಿಳಾ ಕಾರ್ಯಕರ್ತೆ ಮತ್ತು ಮುಚ್ಚಿದ ಕೋಣೆ ಕೇಳಬಹುದು."
+      },
+      "why_it_matters": "Breast cancer five-year survival in India falls from close to 100% at stage I to around 23% at stage IV. Almost the entire difference is when it was found.",
+      "dignity_note": "NFHS-5 recorded only 0.9% of women aged 30-49 as ever having had a breast examination. Field research identified embarrassment and the absence of a female examiner as major barriers. AIRA states explicitly that a female examiner and a private room can be requested.",
+      "citation": { "source": "NP-NCD", "section": "screening", "quote": "Clinical breast examination for women aged 30 years and above, once in five years." }
+    },
+    {
+      "id": "SCR_CERVICAL",
+      "name": { "en": "Cervical cancer screening", "hi": "गर्भाशय ग्रीवा कैंसर जांच", "kn": "ಗರ್ಭಕಂಠ ಕ್ಯಾನ್ಸರ್ ಪರೀಕ್ಷೆ" },
+      "eligibility": { "min_age": 30, "max_age": 65, "sex": "female" },
+      "interval_months": 60,
+      "test": "Visual Inspection with Acetic Acid (VIA)",
+      "where": "Ayushman Bharat Health and Wellness Centre / PHC / CHC",
+      "who_performs": "Trained ANM or Medical Officer",
+      "cost_to_patient": 0,
+      "patient_message": {
+        "en": "A simple test using vinegar solution. It is free, takes about ten minutes, and is done by a female health worker in a private room.",
+        "hi": "सिरके के घोल से एक सरल जांच। मुफ्त, लगभग दस मिनट, महिला स्वास्थ्यकर्मी निजी कमरे में करती हैं।",
+        "kn": "ವಿನೆಗರ್ ದ್ರಾವಣ ಬಳಸಿ ಸರಳ ಪರೀಕ್ಷೆ. ಉಚಿತ, ಸುಮಾರು ಹತ್ತು ನಿಮಿಷ, ಮಹಿಳಾ ಕಾರ್ಯಕರ್ತೆ ಖಾಸಗಿ ಕೋಣೆಯಲ್ಲಿ ಮಾಡುತ್ತಾರೆ."
+      },
+      "why_it_matters": "Cervical cancer is almost entirely preventable through screening, and India still carries roughly a fifth of the global burden. NFHS-5 recorded 1.9% of women aged 30-49 as ever screened.",
+      "citation": { "source": "NP-NCD", "section": "screening", "quote": "Visual Inspection with Acetic Acid for women aged 30 years and above, once in five years." }
+    },
+    {
+      "id": "SCR_HPV_VACCINE",
+      "name": { "en": "HPV vaccination", "hi": "एचपीवी टीका", "kn": "ಎಚ್‌ಪಿವಿ ಲಸಿಕೆ" },
+      "eligibility": { "min_age": 9, "max_age": 14, "sex": "female" },
+      "interval_months": null,
+      "one_time": true,
+      "test": "HPV vaccine, two doses",
+      "where": "Government immunisation programme where rolled out",
+      "who_performs": "ANM",
+      "cost_to_patient": 0,
+      "patient_message": {
+        "en": "Girls aged 9 to 14 can be vaccinated against the virus that causes most cervical cancers. This is prevention, not treatment.",
+        "hi": "9 से 14 वर्ष की लड़कियों को उस वायरस का टीका लग सकता है जो अधिकांश सर्वाइकल कैंसर का कारण है। यह बचाव है, इलाज नहीं।",
+        "kn": "9 ರಿಂದ 14 ವರ್ಷದ ಹುಡುಗಿಯರಿಗೆ ಗರ್ಭಕಂಠ ಕ್ಯಾನ್ಸರ್ ಕಾರಣವಾಗುವ ವೈರಸ್ ವಿರುದ್ಧ ಲಸಿಕೆ ಸಿಗುತ್ತದೆ. ಇದು ತಡೆಗಟ್ಟುವಿಕೆ, ಚಿಕಿತ್ಸೆ ಅಲ್ಲ."
+      },
+      "citation": { "source": "NCG", "section": "prevention", "quote": "HPV vaccination is recommended for girls aged 9-14 years as primary prevention against cervical cancer." }
+    }
+  ],
+
+  "risk_factor_definitions": {
+    "tobacco_smoking": "Any current or past cigarette or bidi smoking",
+    "tobacco_chewing": "Any current or past use of chewing tobacco, khaini, zarda or gutka",
+    "areca_nut": "Any current or past areca nut / supari / paan masala use",
+    "alcohol_heavy": "Regular alcohol use above locally defined thresholds",
+    "family_history_breast": "First-degree relative with breast cancer",
+    "family_history_ovary": "First-degree relative with ovarian cancer",
+    "nulliparity": "Has never given birth",
+    "late_menopause": "Menopause after age 55"
+  },
+
+  "display_rules": [
+    "Screening cards must never appear in the same list as symptom alerts. Screening is for people who feel well. Mixing them makes healthy people anxious and makes symptomatic people complacent.",
+    "Never show a screening card as 'overdue' in red. Show it as 'available to you'. The tone of a prevention message must not be the tone of an alarm.",
+    "Always show cost (free), duration, location and who performs it. Field research found 'too many steps in the process' and 'too far' were larger barriers than fear.",
+    "For breast and cervical screening, always show the dignity note about requesting a female examiner and a private room."
+  ]
+}

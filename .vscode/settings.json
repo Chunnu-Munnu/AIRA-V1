@@ -1,0 +1,18 @@
+{
+  "python.defaultInterpreterPath": "py -3.11",
+  "python.analysis.extraPaths": ["${workspaceFolder}"],
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "web/node_modules": true,
+    "web/dist": true
+  },
+  "search.exclude": {
+    "web/node_modules": true,
+    "web/dist": true,
+    "rag/index": true,
+    "storage": true
+  }
+}

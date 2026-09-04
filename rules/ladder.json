@@ -1,0 +1,132 @@
+{
+  "ruleset_version": "1.0.0",
+  "updated": "2026-09-03",
+  "description": "The Loop Detector. This is AIRA's core original contribution. It does not ask 'does this person have cancer'. It asks 'is this person stuck in a loop that no single doctor can see, because each doctor only sees one visit?'. It operates on the trajectory of a symptom cluster, not on the symptom itself.",
+
+  "design_note": "A single doctor prescribing an antacid for indigestion is making a correct probabilistic judgement. The base rate of cancer in that presentation is very low. The failure is not the first benign explanation. It is the second and the third, offered by people who never learn that the first one failed. The Loop Detector exists to make that failure visible.",
+
+  "levels": [
+    {
+      "level": 0,
+      "code": "L0_OBSERVED",
+      "label": { "en": "Being watched", "hi": "निगरानी में", "kn": "ಗಮನಿಸಲಾಗುತ್ತಿದೆ" },
+      "colour": "neutral",
+      "conditions": { "always": true },
+      "patient_message": {
+        "en": "We are keeping track of this. We will check with you again soon.",
+        "hi": "हम इस पर नजर रख रहे हैं। हम जल्दी फिर पूछेंगे।",
+        "kn": "ನಾವು ಇದನ್ನು ಗಮನಿಸುತ್ತಿದ್ದೇವೆ. ಶೀಘ್ರದಲ್ಲೇ ಮತ್ತೆ ಕೇಳುತ್ತೇವೆ."
+      },
+      "clinician_message": "Symptom logged and within its safe window. No action required.",
+      "action": "SCHEDULE_CHECKBACK"
+    },
+    {
+      "level": 1,
+      "code": "L1_REPEAT_PRESENTATION",
+      "label": { "en": "Seen more than once, nothing tested", "hi": "एक से ज्यादा बार दिखाया, कोई जांच नहीं", "kn": "ಒಂದಕ್ಕಿಂತ ಹೆಚ್ಚು ಬಾರಿ ತೋರಿಸಿದ್ದೀರಿ, ಪರೀಕ್ಷೆ ಆಗಿಲ್ಲ" },
+      "colour": "amber",
+      "conditions": {
+        "all": [
+          { "field": "n_episodes", "op": ">=", "value": 2 },
+          { "field": "n_investigations", "op": "==", "value": 0 }
+        ]
+      },
+      "patient_message": {
+        "en": "You have been to a doctor {n_episodes} times about this same problem, and no test has been done yet. Next time, ask for a test.",
+        "hi": "आप इसी समस्या के लिए {n_episodes} बार डॉक्टर के पास गए हैं और अभी तक कोई जांच नहीं हुई। अगली बार जांच के लिए कहें।",
+        "kn": "ಇದೇ ಸಮಸ್ಯೆಗೆ {n_episodes} ಬಾರಿ ವೈದ್ಯರ ಬಳಿ ಹೋಗಿದ್ದೀರಿ, ಇನ್ನೂ ಪರೀಕ್ಷೆ ಆಗಿಲ್ಲ. ಮುಂದಿನ ಬಾರಿ ಪರೀಕ್ಷೆ ಕೇಳಿ."
+      },
+      "clinician_message": "REPEAT PRESENTATION: {n_episodes} encounters for the same symptom cluster, zero investigations recorded. Expected investigations for this cluster: {expected_investigations}.",
+      "action": "SUGGEST_INVESTIGATION"
+    },
+    {
+      "level": 2,
+      "code": "L2_TREATMENT_REFRACTORY",
+      "label": { "en": "Treatment has not worked, and it has been too long", "hi": "इलाज से फायदा नहीं और बहुत समय हो गया", "kn": "ಚಿಕಿತ್ಸೆ ಫಲಿಸಿಲ್ಲ, ಬಹಳ ಸಮಯವಾಗಿದೆ" },
+      "colour": "orange",
+      "conditions": {
+        "all": [
+          { "field": "n_failed_treatments", "op": ">=", "value": 2 },
+          { "field": "duration_ratio", "op": ">", "value": 1.0 }
+        ]
+      },
+      "patient_message": {
+        "en": "You have taken {n_failed_treatments} different treatments for this and it has not gone away in {days_elapsed} days. This needs a proper test now, not another medicine.",
+        "hi": "आपने इसके लिए {n_failed_treatments} अलग-अलग इलाज लिए हैं और {days_elapsed} दिनों में ठीक नहीं हुआ। अब दवा नहीं, जांच चाहिए।",
+        "kn": "ಇದಕ್ಕಾಗಿ {n_failed_treatments} ಬೇರೆ ಬೇರೆ ಚಿಕಿತ್ಸೆ ತೆಗೆದುಕೊಂಡಿದ್ದೀರಿ, {days_elapsed} ದಿನಗಳಲ್ಲಿ ಗುಣವಾಗಿಲ್ಲ. ಈಗ ಔಷಧಿ ಅಲ್ಲ, ಪರೀಕ್ಷೆ ಬೇಕು."
+      },
+      "clinician_message": "TREATMENT-REFRACTORY: {n_failed_treatments} failed treatment courses over {days_elapsed} days against a {safe_window_days}-day safe window (ratio {duration_ratio}). The working diagnosis has failed at least twice. Recommend: {expected_investigations}.",
+      "action": "ESCALATE_TO_INVESTIGATION"
+    },
+    {
+      "level": 3,
+      "code": "L3_ESCALATE_NOW",
+      "label": { "en": "Needs to be seen now", "hi": "अभी दिखाना जरूरी है", "kn": "ಈಗಲೇ ತೋರಿಸಬೇಕು" },
+      "colour": "red",
+      "conditions": {
+        "all": [
+          { "field": "ladder_level_base", "op": ">=", "value": 2 }
+        ],
+        "any": [
+          { "field": "severity_slope", "op": ">", "value": 0.0 },
+          { "field": "new_red_flag_since_onset", "op": "==", "value": true },
+          { "field": "risk_tier", "op": "==", "value": "HIGH" },
+          { "field": "breadth_creep", "op": ">=", "value": 2 }
+        ]
+      },
+      "patient_message": {
+        "en": "Please see a doctor this week and take this card with you. It shows everything that has happened so far.",
+        "hi": "कृपया इसी सप्ताह डॉक्टर को दिखाएं और यह कार्ड साथ ले जाएं। इसमें अब तक की पूरी जानकारी है।",
+        "kn": "ದಯವಿಟ್ಟು ಈ ವಾರ ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ ಮತ್ತು ಈ ಕಾರ್ಡ್ ತೆಗೆದುಕೊಂಡು ಹೋಗಿ. ಇಲ್ಲಿಯವರೆಗಿನ ಎಲ್ಲಾ ಮಾಹಿತಿ ಇದೆ."
+      },
+      "clinician_message": "ESCALATE: treatment-refractory trajectory with {escalation_reason}. Generate Handoff Card. Recommend referral under the appropriate suspected cancer pathway.",
+      "action": "GENERATE_HANDOFF_CARD"
+    }
+  ],
+
+  "features": {
+    "duration_ratio": {
+      "definition": "days_elapsed / safe_window_days",
+      "why": "Normalises time against what is clinically expected for THIS symptom. 30 days of dysphagia and 30 days of fatigue are not the same thing. This is the dominant feature of the trajectory model.",
+      "monotonic": "increasing"
+    },
+    "n_episodes": {
+      "definition": "Count of recorded healthcare encounters for this symptom cluster",
+      "why": "Each additional visit for an unresolved problem is evidence that the working diagnosis is wrong.",
+      "monotonic": "increasing"
+    },
+    "n_failed_treatments": {
+      "definition": "Count of episodes where an intervention was given and outcome_at_followup != 'resolved'",
+      "why": "This is the strongest signal in the entire system. It is the pattern every NGO we interviewed described independently.",
+      "monotonic": "increasing"
+    },
+    "n_investigations": {
+      "definition": "Count of episodes where investigation_ordered != 'none'",
+      "why": "Zero investigations across multiple visits is the definition of a diagnostic loop.",
+      "monotonic": "decreasing"
+    },
+    "severity_slope": {
+      "definition": "Linear regression slope of severity scores over time, per 30 days",
+      "why": "A symptom getting worse is different from a symptom staying the same.",
+      "monotonic": "increasing"
+    },
+    "breadth_creep": {
+      "definition": "Count of new distinct symptoms reported since the anchor symptom onset",
+      "why": "Cancer recruits symptoms over time. A benign condition usually does not.",
+      "monotonic": "increasing"
+    },
+    "provider_switches": {
+      "definition": "Count of distinct provider_type values across episodes",
+      "why": "Switching providers usually means the patient is not satisfied, and it guarantees no one has the full history. This is exactly the gap AIRA closes.",
+      "monotonic": "increasing"
+    }
+  },
+
+  "safety_properties": [
+    "The ladder can only be raised by evidence, never lowered by a model.",
+    "A red flag sets a tier floor that the ladder and the models cannot go below.",
+    "Every level transition is stored with its ruleset_version so any past decision can be replayed exactly as it was made.",
+    "The ladder never names a cancer. It names a pattern. The word 'cancer' appears in no patient-facing ladder message.",
+    "AIRA can raise concern. AIRA can never tell a patient they are fine."
+  ]
+}

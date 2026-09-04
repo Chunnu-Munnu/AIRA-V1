@@ -1,0 +1,13 @@
+SRI VENKATESHWARA DIAGNOSTIC CENTRE, KOLAR
+Patient: [redacted]        Age/Sex: 7 Y / M
+Date: 02/09/2026
+
+COMPLETE BLOOD COUNT
+  Haemoglobin            8.2 g/dL          (11.5 - 15.5)
+  Total Leucocyte Count  28,400 cells/cu mm  (5000 - 15000)
+  Platelet Count         74,000 /cu mm     (150000 - 450000)
+  ESR                    48 mm/hr
+
+Sputum AFB: Negative
+
+IMPRESSION: Suggest haematology opinion.

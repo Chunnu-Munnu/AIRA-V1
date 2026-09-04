@@ -1,0 +1,41 @@
+# AIRA - Python 3.11 required.
+#   interpret (EBM), xgboost and onnxruntime do not publish wheels for 3.14.
+#   Create the environment with:  py -3.11 -m venv .venv
+#
+#   pip install -r requirements.txt
+
+# ── engine + tests (Block 1 - installed) ────────────────────────────────
+pytest>=8.0
+
+# ── API + database (Block 1b) ───────────────────────────────────────────
+fastapi>=0.115
+uvicorn[standard]>=0.34
+sqlalchemy>=2.0
+pymysql>=1.1
+cryptography>=44.0
+pydantic>=2.10
+pydantic-settings>=2.7
+python-jose[cryptography]>=3.3
+argon2-cffi>=23.1
+python-multipart>=0.0.20
+slowapi>=0.1.9
+python-dotenv>=1.0
+
+# ── machine learning (Block 2) ──────────────────────────────────────────
+numpy>=1.26
+pandas>=2.2
+scikit-learn>=1.5
+xgboost>=2.1
+interpret>=0.6
+onnx>=1.17
+onnxruntime>=1.20
+skl2onnx>=1.17
+matplotlib>=3.9
+
+# ── retrieval (Block 4) ─────────────────────────────────────────────────
+chromadb>=0.5
+sentence-transformers>=3.3
+rank-bm25>=0.2.2
+
+# ── voice (Block 3) ─────────────────────────────────────────────────────
+httpx>=0.28

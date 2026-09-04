@@ -1,0 +1,841 @@
+{
+  "ruleset_version": "1.0.0",
+  "updated": "2026-09-03",
+  "needs_clinical_review": true,
+  "review_note": "Every safe_window_days value below is derived from published referral guidance but has NOT yet been signed off by a practising clinician. AIRA must not be deployed on live patients until a named clinical reviewer has approved this file and bumped ruleset_version. Every assessment stores the ruleset_version it was made under, so decisions made before review can be identified and replayed.",
+  "sources": {
+    "NG12": "NICE Guideline NG12 - Suspected cancer: recognition and referral (UK). Used for referral thresholds and duration cut-offs.",
+    "NTEP": "India National Tuberculosis Elimination Programme - presumptive TB case definition.",
+    "NP-NCD": "India National Programme for Prevention and Control of Non-Communicable Diseases - operational guidelines, CBAC.",
+    "NCG": "National Cancer Grid India - management guidelines.",
+    "HAMILTON": "Hamilton W. et al., positive predictive values of cancer symptoms in primary care, Br J Cancer / BMJ."
+  },
+  "defaults": {
+    "safe_window_days": 28,
+    "checkback_fractions": [0.33, 0.66, 1.0],
+    "checkback_fractions_high_risk": [0.2, 0.4, 0.6, 0.8, 1.0],
+    "max_missed_checkbacks_before_outreach": 2
+  },
+
+  "symptoms": [
+    {
+      "code": "cough",
+      "label": { "en": "Cough", "hi": "खांसी", "kn": "ಕೆಮ್ಮು" },
+      "patient_phrasing": {
+        "en": "A cough that will not go away",
+        "hi": "ऐसी खांसी जो ठीक नहीं हो रही",
+        "kn": "ಹೋಗದ ಕೆಮ್ಮು"
+      },
+      "cluster": "respiratory",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 14,
+          "action": "TB_SPUTUM",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "Your cough has lasted 14 days. In India, a cough this long means you should have a sputum test for TB. It is free at your health centre.",
+            "hi": "आपकी खांसी 14 दिन से है। भारत में इतनी लंबी खांसी में टीबी की बलगम जांच करानी चाहिए। यह स्वास्थ्य केंद्र पर मुफ्त है।",
+            "kn": "ನಿಮ್ಮ ಕೆಮ್ಮು 14 ದಿನಗಳಿಂದ ಇದೆ. ಭಾರತದಲ್ಲಿ ಇಷ್ಟು ದಿನದ ಕೆಮ್ಮಿಗೆ ಟಿಬಿ ಕಫ ಪರೀಕ್ಷೆ ಮಾಡಿಸಬೇಕು. ಆರೋಗ್ಯ ಕೇಂದ್ರದಲ್ಲಿ ಉಚಿತ."
+          },
+          "source": "NTEP presumptive TB definition: cough of 2 weeks or more"
+        },
+        {
+          "day": 21,
+          "action": "CHEST_XRAY",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "Your cough has lasted 21 days. If the TB test was negative, or TB treatment did not help, ask for a chest X-ray.",
+            "hi": "आपकी खांसी 21 दिन से है। अगर टीबी जांच नेगेटिव थी या टीबी के इलाज से फायदा नहीं हुआ, तो छाती का एक्स-रे मांगें।",
+            "kn": "ನಿಮ್ಮ ಕೆಮ್ಮು 21 ದಿನಗಳಿಂದ ಇದೆ. ಟಿಬಿ ಪರೀಕ್ಷೆ ನೆಗೆಟಿವ್ ಆಗಿದ್ದರೆ ಅಥವಾ ಟಿಬಿ ಚಿಕಿತ್ಸೆ ಫಲಿಸದಿದ್ದರೆ, ಎದೆಯ ಎಕ್ಸ್-ರೇ ಕೇಳಿ."
+          },
+          "source": "NG12 1.1.2 / 1.1.3"
+        }
+      ],
+      "associated_sites": ["lung", "larynx"],
+      "expected_investigations": ["sputum_afb", "chest_xray"],
+      "citation": {
+        "source": "NG12",
+        "section": "1.1.2",
+        "quote": "Offer an urgent chest X-ray (to be performed within 2 weeks) to assess for lung cancer in people aged 40 and over if they have 2 or more unexplained symptoms, or if they have ever smoked and have 1 or more unexplained symptoms.",
+        "confidence": "high"
+      }
+    },
+    {
+      "code": "haemoptysis",
+      "label": { "en": "Coughing up blood", "hi": "खांसी में खून आना", "kn": "ಕೆಮ್ಮಿನಲ್ಲಿ ರಕ್ತ" },
+      "patient_phrasing": { "en": "Blood when I cough", "hi": "खांसते समय खून", "kn": "ಕೆಮ್ಮಿದಾಗ ರಕ್ತ" },
+      "cluster": "respiratory",
+      "safe_window_days": 0,
+      "applies": { "min_age": 40, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung"],
+      "expected_investigations": ["chest_xray", "ct_chest"],
+      "citation": {
+        "source": "NG12",
+        "section": "1.1.1",
+        "quote": "Refer people using a suspected cancer pathway referral (for an appointment within 2 weeks) for lung cancer if they are aged 40 and over with unexplained haemoptysis.",
+        "confidence": "high"
+      }
+    },
+    {
+      "code": "breathlessness",
+      "label": { "en": "Shortness of breath", "hi": "सांस फूलना", "kn": "ಉಸಿರಾಟದ ತೊಂದರೆ" },
+      "patient_phrasing": { "en": "Getting out of breath easily", "hi": "जल्दी सांस फूल जाना", "kn": "ಬೇಗ ಉಸಿರುಗಟ್ಟುವುದು" },
+      "cluster": "respiratory",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung"],
+      "expected_investigations": ["chest_xray"],
+      "citation": { "source": "NG12", "section": "1.1.2", "quote": "Qualifying unexplained symptom for lung cancer assessment in people aged 40 and over.", "confidence": "high" }
+    },
+    {
+      "code": "chest_pain",
+      "label": { "en": "Chest pain", "hi": "छाती में दर्द", "kn": "ಎದೆ ನೋವು" },
+      "patient_phrasing": { "en": "Pain in the chest", "hi": "छाती में दर्द", "kn": "ಎದೆಯಲ್ಲಿ ನೋವು" },
+      "cluster": "respiratory",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung"],
+      "expected_investigations": ["chest_xray"],
+      "citation": { "source": "NG12", "section": "1.1.2", "quote": "Qualifying unexplained symptom for lung cancer assessment in people aged 40 and over.", "confidence": "high" }
+    },
+    {
+      "code": "recurrent_chest_infection",
+      "label": { "en": "Repeated chest infections", "hi": "बार-बार छाती का संक्रमण", "kn": "ಪದೇ ಪದೇ ಎದೆ ಸೋಂಕು" },
+      "patient_phrasing": { "en": "Chest infection keeps coming back", "hi": "छाती का संक्रमण बार-बार होता है", "kn": "ಎದೆ ಸೋಂಕು ಮತ್ತೆ ಮತ್ತೆ ಬರುತ್ತದೆ" },
+      "cluster": "respiratory",
+      "safe_window_days": 42,
+      "applies": { "min_age": 40, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung"],
+      "expected_investigations": ["chest_xray"],
+      "citation": { "source": "NG12", "section": "1.1.3", "quote": "Consider an urgent chest X-ray in people aged 40 and over with persistent or recurrent chest infection.", "confidence": "high" }
+    },
+
+    {
+      "code": "mouth_ulcer_nonhealing",
+      "label": { "en": "Mouth ulcer that will not heal", "hi": "मुंह का छाला जो ठीक नहीं हो रहा", "kn": "ವಾಸಿಯಾಗದ ಬಾಯಿ ಹುಣ್ಣು" },
+      "patient_phrasing": { "en": "A sore in my mouth that has not healed", "hi": "मुंह में घाव जो भरा नहीं", "kn": "ಗುಣವಾಗದ ಬಾಯಿ ಗಾಯ" },
+      "cluster": "oral",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 21,
+          "action": "ORAL_EXAM_REFERRAL",
+          "tier_floor": "HIGH",
+          "message": {
+            "en": "A sore in the mouth that has not healed in 3 weeks needs to be looked at by a dentist or an ENT doctor.",
+            "hi": "मुंह का घाव जो 3 हफ्ते में नहीं भरा, उसे दंत चिकित्सक या ईएनटी डॉक्टर को दिखाना जरूरी है।",
+            "kn": "3 ವಾರಗಳಲ್ಲಿ ಗುಣವಾಗದ ಬಾಯಿ ಹುಣ್ಣನ್ನು ದಂತ ವೈದ್ಯರು ಅಥವಾ ಇಎನ್‌ಟಿ ವೈದ್ಯರಿಗೆ ತೋರಿಸಬೇಕು."
+          },
+          "source": "NG12 1.9.1"
+        }
+      ],
+      "associated_sites": ["oral_cavity"],
+      "expected_investigations": ["oral_visual_exam", "biopsy_oral"],
+      "citation": { "source": "NG12", "section": "1.9.1", "quote": "Consider a suspected cancer pathway referral for oral cancer in people with unexplained ulceration in the oral cavity lasting for more than 3 weeks.", "confidence": "high" }
+    },
+    {
+      "code": "oral_white_red_patch",
+      "label": { "en": "White or red patch in mouth", "hi": "मुंह में सफेद या लाल धब्बा", "kn": "ಬಾಯಿಯಲ್ಲಿ ಬಿಳಿ ಅಥವಾ ಕೆಂಪು ಕಲೆ" },
+      "patient_phrasing": { "en": "A white or red patch inside my mouth", "hi": "मुंह के अंदर सफेद या लाल निशान", "kn": "ಬಾಯಿ ಒಳಗೆ ಬಿಳಿ ಅಥವಾ ಕೆಂಪು ಕಲೆ" },
+      "cluster": "oral",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oral_cavity"],
+      "expected_investigations": ["oral_visual_exam", "biopsy_oral"],
+      "citation": { "source": "NG12", "section": "1.9.2", "quote": "Consider urgent referral for assessment for possible oral cancer in people with a lump on the lip or in the oral cavity, or a red or red and white patch consistent with erythroplakia or erythroleukoplakia.", "confidence": "high" }
+    },
+    {
+      "code": "trismus",
+      "label": { "en": "Cannot open mouth fully", "hi": "मुंह पूरा नहीं खुलता", "kn": "ಬಾಯಿ ಪೂರ್ತಿ ತೆರೆಯುವುದಿಲ್ಲ" },
+      "patient_phrasing": { "en": "My mouth does not open as wide as before", "hi": "मुंह पहले जितना नहीं खुलता", "kn": "ಮೊದಲಿನಷ್ಟು ಬಾಯಿ ತೆರೆಯುತ್ತಿಲ್ಲ" },
+      "cluster": "oral",
+      "safe_window_days": 30,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oral_cavity"],
+      "expected_investigations": ["oral_visual_exam"],
+      "citation": { "source": "NCG", "section": "oral", "quote": "Restricted mouth opening is a recognised feature of oral submucous fibrosis, a potentially malignant disorder strongly associated with areca nut chewing and highly prevalent in India.", "confidence": "medium" }
+    },
+    {
+      "code": "loose_teeth",
+      "label": { "en": "Teeth becoming loose", "hi": "दांत ढीले होना", "kn": "ಹಲ್ಲುಗಳು ಸಡಿಲವಾಗುವುದು" },
+      "patient_phrasing": { "en": "Teeth getting loose without injury", "hi": "बिना चोट के दांत हिलना", "kn": "ಗಾಯವಿಲ್ಲದೆ ಹಲ್ಲು ಅಲುಗಾಡುವುದು" },
+      "cluster": "oral",
+      "safe_window_days": 30,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oral_cavity"],
+      "expected_investigations": ["oral_visual_exam", "opg_xray"],
+      "citation": { "source": "NG12", "section": "1.9", "quote": "Unexplained tooth mobility is a recognised presenting feature of oral malignancy.", "confidence": "medium" }
+    },
+    {
+      "code": "hoarseness",
+      "label": { "en": "Hoarse voice", "hi": "आवाज बैठना", "kn": "ಧ್ವನಿ ಒರಟಾಗುವುದು" },
+      "patient_phrasing": { "en": "My voice has changed and stayed changed", "hi": "आवाज बदल गई है और वैसी ही है", "kn": "ಧ್ವನಿ ಬದಲಾಗಿ ಹಾಗೇ ಇದೆ" },
+      "cluster": "head_neck",
+      "safe_window_days": 21,
+      "applies": { "min_age": 45, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 21,
+          "action": "ENT_REFERRAL",
+          "tier_floor": "HIGH",
+          "message": {
+            "en": "Your voice has been hoarse for more than 3 weeks. An ENT doctor should look at your throat.",
+            "hi": "आपकी आवाज 3 हफ्ते से ज्यादा भारी है। ईएनटी डॉक्टर को गला दिखाना चाहिए।",
+            "kn": "ನಿಮ್ಮ ಧ್ವನಿ 3 ವಾರಕ್ಕಿಂತ ಹೆಚ್ಚು ಒರಟಾಗಿದೆ. ಇಎನ್‌ಟಿ ವೈದ್ಯರು ಗಂಟಲು ಪರೀಕ್ಷಿಸಬೇಕು."
+          },
+          "source": "NG12 1.7.1"
+        }
+      ],
+      "associated_sites": ["larynx", "lung", "thyroid"],
+      "expected_investigations": ["laryngoscopy", "chest_xray"],
+      "citation": { "source": "NG12", "section": "1.7.1", "quote": "Consider a suspected cancer pathway referral for laryngeal cancer in people aged 45 and over with persistent unexplained hoarseness.", "confidence": "high" }
+    },
+    {
+      "code": "neck_lump",
+      "label": { "en": "Lump in the neck", "hi": "गर्दन में गांठ", "kn": "ಕುತ್ತಿಗೆಯಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "A lump in my neck", "hi": "गर्दन में गांठ", "kn": "ಕುತ್ತಿಗೆಯಲ್ಲಿ ಗಂಟು" },
+      "cluster": "head_neck",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["head_neck", "thyroid", "lymphoma"],
+      "expected_investigations": ["fnac", "ultrasound_neck"],
+      "citation": { "source": "NG12", "section": "1.7.2", "quote": "Consider a suspected cancer pathway referral for people with an unexplained persistent lump in the neck.", "confidence": "high" }
+    },
+    {
+      "code": "sore_throat_persistent",
+      "label": { "en": "Sore throat that persists", "hi": "लगातार गले में खराश", "kn": "ನಿರಂತರ ಗಂಟಲು ನೋವು" },
+      "patient_phrasing": { "en": "Throat pain that keeps going", "hi": "गले का दर्द जो बना रहता है", "kn": "ಹೋಗದ ಗಂಟಲು ನೋವು" },
+      "cluster": "head_neck",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oropharynx", "larynx"],
+      "expected_investigations": ["ent_exam"],
+      "citation": { "source": "NCG", "section": "head_neck", "quote": "Persistent unilateral throat discomfort beyond 4 weeks warrants ENT assessment.", "confidence": "medium" }
+    },
+    {
+      "code": "ear_pain_unilateral",
+      "label": { "en": "Pain in one ear", "hi": "एक कान में दर्द", "kn": "ಒಂದು ಕಿವಿಯಲ್ಲಿ ನೋವು" },
+      "patient_phrasing": { "en": "One ear hurts and there is no infection", "hi": "एक कान में दर्द, संक्रमण नहीं", "kn": "ಒಂದು ಕಿವಿ ನೋವು, ಸೋಂಕು ಇಲ್ಲ" },
+      "cluster": "head_neck",
+      "safe_window_days": 28,
+      "applies": { "min_age": 40, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oropharynx", "larynx"],
+      "expected_investigations": ["ent_exam"],
+      "citation": { "source": "NCG", "section": "head_neck", "quote": "Referred otalgia with a normal ear examination is a recognised red flag for pharyngeal or laryngeal malignancy.", "confidence": "medium" }
+    },
+
+    {
+      "code": "dysphagia",
+      "label": { "en": "Difficulty swallowing", "hi": "निगलने में कठिनाई", "kn": "ನುಂಗಲು ಕಷ್ಟ" },
+      "patient_phrasing": { "en": "Food gets stuck when I swallow", "hi": "खाना निगलते समय अटकता है", "kn": "ನುಂಗುವಾಗ ಆಹಾರ ಸಿಕ್ಕಿಕೊಳ್ಳುತ್ತದೆ" },
+      "cluster": "upper_gi",
+      "safe_window_days": 0,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["oesophagus", "stomach"],
+      "expected_investigations": ["upper_gi_endoscopy"],
+      "citation": { "source": "NG12", "section": "1.2.1", "quote": "Offer urgent direct access upper gastrointestinal endoscopy (to be performed within 2 weeks) to assess for oesophageal or stomach cancer in people with dysphagia.", "confidence": "high" }
+    },
+    {
+      "code": "dyspepsia",
+      "label": { "en": "Acidity or indigestion", "hi": "एसिडिटी या बदहजमी", "kn": "ಆಮ್ಲೀಯತೆ ಅಥವಾ ಅಜೀರ್ಣ" },
+      "patient_phrasing": { "en": "Burning or heaviness in the stomach", "hi": "पेट में जलन या भारीपन", "kn": "ಹೊಟ್ಟೆಯಲ್ಲಿ ಉರಿ ಅಥವಾ ಭಾರ" },
+      "cluster": "upper_gi",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 42,
+          "action": "ENDOSCOPY_CONSIDER",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "This burning has continued for 6 weeks even with medicine. It should be tested now, not treated again.",
+            "hi": "दवा के बावजूद यह जलन 6 हफ्ते से है। अब दोबारा दवा नहीं, जांच होनी चाहिए।",
+            "kn": "ಔಷಧಿ ತೆಗೆದುಕೊಂಡರೂ ಈ ಉರಿ 6 ವಾರಗಳಿಂದ ಇದೆ. ಈಗ ಮತ್ತೆ ಔಷಧಿ ಅಲ್ಲ, ಪರೀಕ್ಷೆ ಆಗಬೇಕು."
+          },
+          "source": "NG12 1.2.4"
+        }
+      ],
+      "associated_sites": ["stomach", "oesophagus", "pancreas"],
+      "expected_investigations": ["upper_gi_endoscopy", "h_pylori_test"],
+      "citation": { "source": "NG12", "section": "1.2.4", "quote": "Consider non-urgent direct access upper gastrointestinal endoscopy to assess for oesophageal or stomach cancer in people aged 55 or over with treatment-resistant dyspepsia.", "confidence": "high" }
+    },
+    {
+      "code": "early_satiety",
+      "label": { "en": "Feeling full very quickly", "hi": "जल्दी पेट भर जाना", "kn": "ಬೇಗ ಹೊಟ್ಟೆ ತುಂಬುವುದು" },
+      "patient_phrasing": { "en": "I feel full after only a little food", "hi": "थोड़ा खाते ही पेट भर जाता है", "kn": "ಸ್ವಲ್ಪ ತಿಂದರೆ ಹೊಟ್ಟೆ ತುಂಬುತ್ತದೆ" },
+      "cluster": "upper_gi",
+      "safe_window_days": 28,
+      "applies": { "min_age": 55, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["stomach", "ovary", "pancreas"],
+      "expected_investigations": ["upper_gi_endoscopy", "ultrasound_abdomen"],
+      "citation": { "source": "NG12", "section": "1.2.5", "quote": "Consider endoscopy in people aged 55 and over with upper abdominal pain with reflux, or with nausea or vomiting and weight loss.", "confidence": "high" }
+    },
+    {
+      "code": "vomiting_persistent",
+      "label": { "en": "Vomiting that keeps happening", "hi": "बार-बार उल्टी", "kn": "ಪದೇ ಪದೇ ವಾಂತಿ" },
+      "patient_phrasing": { "en": "I keep vomiting", "hi": "बार-बार उल्टी होती है", "kn": "ಪದೇ ಪದೇ ವಾಂತಿಯಾಗುತ್ತದೆ" },
+      "cluster": "upper_gi",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["stomach", "oesophagus"],
+      "expected_investigations": ["upper_gi_endoscopy"],
+      "citation": { "source": "NG12", "section": "1.2.5", "quote": "Nausea or vomiting with weight loss in people aged 55 and over warrants endoscopy.", "confidence": "high" }
+    },
+    {
+      "code": "epigastric_pain",
+      "label": { "en": "Upper abdominal pain", "hi": "पेट के ऊपरी हिस्से में दर्द", "kn": "ಹೊಟ್ಟೆಯ ಮೇಲ್ಭಾಗದ ನೋವು" },
+      "patient_phrasing": { "en": "Pain above my navel", "hi": "नाभि के ऊपर दर्द", "kn": "ಹೊಕ್ಕುಳಿನ ಮೇಲೆ ನೋವು" },
+      "cluster": "upper_gi",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["stomach", "pancreas", "liver"],
+      "expected_investigations": ["ultrasound_abdomen", "upper_gi_endoscopy"],
+      "citation": { "source": "NG12", "section": "1.2.5", "quote": "Upper abdominal pain with reflux in people aged 55 and over is an indication for endoscopy.", "confidence": "high" }
+    },
+    {
+      "code": "jaundice",
+      "label": { "en": "Yellowing of eyes or skin", "hi": "आंखों या त्वचा का पीला होना", "kn": "ಕಣ್ಣು ಅಥವಾ ಚರ್ಮ ಹಳದಿಯಾಗುವುದು" },
+      "patient_phrasing": { "en": "My eyes have turned yellow", "hi": "आंखें पीली हो गई हैं", "kn": "ಕಣ್ಣುಗಳು ಹಳದಿಯಾಗಿವೆ" },
+      "cluster": "upper_gi",
+      "safe_window_days": 0,
+      "applies": { "min_age": 40, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["pancreas", "liver", "bile_duct"],
+      "expected_investigations": ["ultrasound_abdomen", "lft", "ct_abdomen"],
+      "citation": { "source": "NG12", "section": "1.2.9", "quote": "Refer people using a suspected cancer pathway referral for pancreatic cancer if they are aged 40 and over and have jaundice.", "confidence": "high" }
+    },
+
+    {
+      "code": "rectal_bleeding",
+      "label": { "en": "Blood in stool", "hi": "मल में खून", "kn": "ಮಲದಲ್ಲಿ ರಕ್ತ" },
+      "patient_phrasing": { "en": "Blood when I pass motion", "hi": "शौच के समय खून", "kn": "ಮಲ ವಿಸರ್ಜನೆ ವೇಳೆ ರಕ್ತ" },
+      "cluster": "lower_gi",
+      "safe_window_days": 14,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 14,
+          "action": "COLONOSCOPY_CONSIDER",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "Bleeding has continued for 2 weeks. It is usually piles, but it should be examined rather than assumed.",
+            "hi": "खून 2 हफ्ते से आ रहा है। आमतौर पर यह बवासीर होता है, पर मान लेने के बजाय जांच करानी चाहिए।",
+            "kn": "2 ವಾರಗಳಿಂದ ರಕ್ತಸ್ರಾವ ಇದೆ. ಸಾಮಾನ್ಯವಾಗಿ ಮೂಲವ್ಯಾಧಿ, ಆದರೆ ಊಹಿಸದೆ ಪರೀಕ್ಷಿಸಬೇಕು."
+          },
+          "source": "NG12 1.3.1"
+        }
+      ],
+      "associated_sites": ["colorectum", "anus"],
+      "expected_investigations": ["colonoscopy", "fit_test", "per_rectal_exam"],
+      "citation": { "source": "NG12", "section": "1.3.1", "quote": "Refer adults using a suspected cancer pathway referral for colorectal cancer if they are aged 50 and over with unexplained rectal bleeding.", "confidence": "high" }
+    },
+    {
+      "code": "bowel_habit_change",
+      "label": { "en": "Change in bowel habit", "hi": "मल त्याग की आदत में बदलाव", "kn": "ಮಲ ವಿಸರ್ಜನೆ ಬದಲಾವಣೆ" },
+      "patient_phrasing": { "en": "My motions have changed and stayed changed", "hi": "शौच की आदत बदल गई है", "kn": "ಮಲ ವಿಸರ್ಜನೆ ಬದಲಾಗಿದೆ" },
+      "cluster": "lower_gi",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["colorectum"],
+      "expected_investigations": ["colonoscopy", "fit_test"],
+      "citation": { "source": "NG12", "section": "1.3.1", "quote": "Refer adults aged 60 and over with a change in bowel habit using a suspected cancer pathway referral.", "confidence": "high" }
+    },
+    {
+      "code": "abdominal_lump",
+      "label": { "en": "Lump in the abdomen", "hi": "पेट में गांठ", "kn": "ಹೊಟ್ಟೆಯಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "I can feel a lump in my stomach", "hi": "पेट में गांठ महसूस होती है", "kn": "ಹೊಟ್ಟೆಯಲ್ಲಿ ಗಂಟು ಇದೆ" },
+      "cluster": "lower_gi",
+      "safe_window_days": 0,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["colorectum", "ovary", "kidney", "liver"],
+      "expected_investigations": ["ultrasound_abdomen", "ct_abdomen"],
+      "citation": { "source": "NG12", "section": "1.3.3", "quote": "Refer adults with an abdominal mass consistent with involvement of the large bowel using a suspected cancer pathway referral.", "confidence": "high" }
+    },
+    {
+      "code": "tenesmus",
+      "label": { "en": "Feeling of incomplete emptying", "hi": "मल पूरा न निकलने का एहसास", "kn": "ಮಲ ಪೂರ್ತಿ ಹೋಗದ ಭಾವನೆ" },
+      "patient_phrasing": { "en": "Feels like I still need to go after passing motion", "hi": "शौच के बाद भी लगता है जाना है", "kn": "ಮಲ ವಿಸರ್ಜನೆ ನಂತರವೂ ಹೋಗಬೇಕೆನಿಸುತ್ತದೆ" },
+      "cluster": "lower_gi",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["rectum"],
+      "expected_investigations": ["per_rectal_exam", "colonoscopy"],
+      "citation": { "source": "NCG", "section": "colorectal", "quote": "Tenesmus is a recognised presenting feature of rectal carcinoma.", "confidence": "medium" }
+    },
+
+    {
+      "code": "breast_lump",
+      "label": { "en": "Lump in the breast", "hi": "स्तन में गांठ", "kn": "ಸ್ತನದಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "I felt a lump in my breast", "hi": "स्तन में गांठ महसूस हुई", "kn": "ಸ್ತನದಲ್ಲಿ ಗಂಟು ಸಿಕ್ಕಿತು" },
+      "cluster": "breast",
+      "safe_window_days": 0,
+      "applies": { "min_age": 30, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["breast"],
+      "expected_investigations": ["clinical_breast_exam", "ultrasound_breast", "mammogram", "fnac"],
+      "citation": { "source": "NG12", "section": "1.5.1", "quote": "Refer people using a suspected cancer pathway referral for breast cancer if they are aged 30 and over and have an unexplained breast lump with or without pain.", "confidence": "high" }
+    },
+    {
+      "code": "nipple_discharge",
+      "label": { "en": "Discharge from nipple", "hi": "निप्पल से स्राव", "kn": "ಮೊಲೆತೊಟ್ಟಿನಿಂದ ಸ್ರಾವ" },
+      "patient_phrasing": { "en": "Fluid coming from the nipple", "hi": "निप्पल से तरल निकलना", "kn": "ಮೊಲೆತೊಟ್ಟಿನಿಂದ ದ್ರವ" },
+      "cluster": "breast",
+      "safe_window_days": 14,
+      "applies": { "min_age": 30, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["breast"],
+      "expected_investigations": ["clinical_breast_exam", "ultrasound_breast", "mammogram"],
+      "citation": { "source": "NG12", "section": "1.5.3", "quote": "Consider a suspected cancer pathway referral in people aged 30 and over with unexplained nipple discharge.", "confidence": "high" }
+    },
+    {
+      "code": "nipple_retraction",
+      "label": { "en": "Nipple pulled inward", "hi": "निप्पल अंदर की ओर खिंचना", "kn": "ಮೊಲೆತೊಟ್ಟು ಒಳಕ್ಕೆ ಎಳೆಯುವುದು" },
+      "patient_phrasing": { "en": "My nipple has turned inward", "hi": "निप्पल अंदर चला गया है", "kn": "ಮೊಲೆತೊಟ್ಟು ಒಳಗೆ ಹೋಗಿದೆ" },
+      "cluster": "breast",
+      "safe_window_days": 0,
+      "applies": { "min_age": 30, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["breast"],
+      "expected_investigations": ["clinical_breast_exam", "mammogram"],
+      "citation": { "source": "NG12", "section": "1.5.3", "quote": "Consider a suspected cancer pathway referral in people aged 30 and over with skin changes that suggest breast cancer, including nipple retraction.", "confidence": "high" }
+    },
+    {
+      "code": "breast_skin_change",
+      "label": { "en": "Skin dimpling on breast", "hi": "स्तन की त्वचा में गड्ढा", "kn": "ಸ್ತನ ಚರ್ಮದಲ್ಲಿ ಗುಳಿ" },
+      "patient_phrasing": { "en": "The skin of my breast looks different", "hi": "स्तन की त्वचा अलग दिख रही है", "kn": "ಸ್ತನದ ಚರ್ಮ ಬೇರೆ ಕಾಣುತ್ತಿದೆ" },
+      "cluster": "breast",
+      "safe_window_days": 0,
+      "applies": { "min_age": 30, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["breast"],
+      "expected_investigations": ["clinical_breast_exam", "mammogram"],
+      "citation": { "source": "NG12", "section": "1.5.3", "quote": "Consider a suspected cancer pathway referral in people with skin changes that suggest breast cancer.", "confidence": "high" }
+    },
+    {
+      "code": "axillary_lump",
+      "label": { "en": "Lump in the armpit", "hi": "बगल में गांठ", "kn": "ಕಂಕುಳಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "A lump under my arm", "hi": "बगल में गांठ", "kn": "ಕಂಕುಳಲ್ಲಿ ಗಂಟು" },
+      "cluster": "breast",
+      "safe_window_days": 14,
+      "applies": { "min_age": 30, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["breast", "lymphoma"],
+      "expected_investigations": ["clinical_breast_exam", "ultrasound_axilla", "fnac"],
+      "citation": { "source": "NG12", "section": "1.5", "quote": "Unexplained axillary lymphadenopathy warrants assessment for breast cancer and lymphoma.", "confidence": "medium" }
+    },
+
+    {
+      "code": "postmenopausal_bleeding",
+      "label": { "en": "Bleeding after menopause", "hi": "रजोनिवृत्ति के बाद रक्तस्राव", "kn": "ಋತುಬಂಧದ ನಂತರ ರಕ್ತಸ್ರಾವ" },
+      "patient_phrasing": { "en": "Bleeding started again after my periods had stopped", "hi": "मासिक बंद होने के बाद फिर खून आना", "kn": "ಮುಟ್ಟು ನಿಂತ ಮೇಲೆ ಮತ್ತೆ ರಕ್ತಸ್ರಾವ" },
+      "cluster": "gynae",
+      "safe_window_days": 0,
+      "applies": { "min_age": 40, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["endometrium", "cervix"],
+      "expected_investigations": ["ultrasound_pelvis", "endometrial_biopsy", "speculum_exam"],
+      "citation": { "source": "NG12", "section": "1.6.1", "quote": "Refer women using a suspected cancer pathway referral for endometrial cancer if they are aged 55 and over with post-menopausal bleeding.", "confidence": "high" }
+    },
+    {
+      "code": "postcoital_bleeding",
+      "label": { "en": "Bleeding after intercourse", "hi": "संभोग के बाद रक्तस्राव", "kn": "ಸಂಭೋಗದ ನಂತರ ರಕ್ತಸ್ರಾವ" },
+      "patient_phrasing": { "en": "Bleeding after being with my husband", "hi": "पति के साथ होने के बाद खून आना", "kn": "ಗಂಡನ ಜೊತೆ ಇದ್ದ ನಂತರ ರಕ್ತಸ್ರಾವ" },
+      "cluster": "gynae",
+      "safe_window_days": 14,
+      "applies": { "min_age": 25, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["cervix"],
+      "expected_investigations": ["speculum_exam", "via", "pap_smear", "hpv_test"],
+      "citation": { "source": "NG12", "section": "1.6.4", "quote": "Consider urgent appointment for cervical cancer assessment in women with post-coital bleeding.", "confidence": "high" }
+    },
+    {
+      "code": "intermenstrual_bleeding",
+      "label": { "en": "Bleeding between periods", "hi": "मासिक के बीच रक्तस्राव", "kn": "ಮುಟ್ಟಿನ ನಡುವೆ ರಕ್ತಸ್ರಾವ" },
+      "patient_phrasing": { "en": "Bleeding at the wrong time of month", "hi": "गलत समय पर खून आना", "kn": "ತಪ್ಪು ಸಮಯದಲ್ಲಿ ರಕ್ತಸ್ರಾವ" },
+      "cluster": "gynae",
+      "safe_window_days": 28,
+      "applies": { "min_age": 25, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["cervix", "endometrium"],
+      "expected_investigations": ["speculum_exam", "ultrasound_pelvis"],
+      "citation": { "source": "NG12", "section": "1.6", "quote": "Unexplained intermenstrual bleeding requires assessment for cervical and endometrial pathology.", "confidence": "medium" }
+    },
+    {
+      "code": "vaginal_discharge_foul",
+      "label": { "en": "Foul-smelling discharge", "hi": "दुर्गंधयुक्त स्राव", "kn": "ದುರ್ವಾಸನೆಯ ಸ್ರಾವ" },
+      "patient_phrasing": { "en": "Discharge with a bad smell", "hi": "बदबूदार स्राव", "kn": "ಕೆಟ್ಟ ವಾಸನೆಯ ಸ್ರಾವ" },
+      "cluster": "gynae",
+      "safe_window_days": 28,
+      "applies": { "min_age": 25, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["cervix"],
+      "expected_investigations": ["speculum_exam", "via"],
+      "citation": { "source": "NCG", "section": "cervix", "quote": "Persistent offensive vaginal discharge unresponsive to treatment requires speculum examination to exclude cervical malignancy.", "confidence": "medium" }
+    },
+    {
+      "code": "pelvic_pain",
+      "label": { "en": "Lower abdominal or pelvic pain", "hi": "पेट के निचले हिस्से में दर्द", "kn": "ಹೊಟ್ಟೆಯ ಕೆಳಭಾಗದ ನೋವು" },
+      "patient_phrasing": { "en": "Pain low down in my stomach", "hi": "पेट के नीचे दर्द", "kn": "ಹೊಟ್ಟೆಯ ಕೆಳಗೆ ನೋವು" },
+      "cluster": "gynae",
+      "safe_window_days": 30,
+      "applies": { "min_age": null, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["ovary", "endometrium"],
+      "expected_investigations": ["ultrasound_pelvis", "ca125"],
+      "citation": { "source": "NG12", "section": "1.6.7", "quote": "Carry out tests in primary care if a woman reports persistent or frequent abdominal distension, early satiety, pelvic or abdominal pain, occurring more than 12 times per month.", "confidence": "high" }
+    },
+    {
+      "code": "abdominal_distension",
+      "label": { "en": "Abdominal bloating", "hi": "पेट फूलना", "kn": "ಹೊಟ್ಟೆ ಉಬ್ಬುವುದು" },
+      "patient_phrasing": { "en": "My stomach feels bloated most days", "hi": "ज्यादातर दिन पेट फूला रहता है", "kn": "ಹೆಚ್ಚಿನ ದಿನ ಹೊಟ್ಟೆ ಉಬ್ಬಿರುತ್ತದೆ" },
+      "cluster": "gynae",
+      "safe_window_days": 30,
+      "applies": { "min_age": 40, "max_age": null, "sex": "female" },
+      "milestones": [],
+      "associated_sites": ["ovary"],
+      "expected_investigations": ["ultrasound_pelvis", "ca125"],
+      "citation": { "source": "NG12", "section": "1.6.7", "quote": "Persistent abdominal distension in women, particularly aged 50 and over, should prompt testing for ovarian cancer.", "confidence": "high" }
+    },
+
+    {
+      "code": "haematuria",
+      "label": { "en": "Blood in urine", "hi": "पेशाब में खून", "kn": "ಮೂತ್ರದಲ್ಲಿ ರಕ್ತ" },
+      "patient_phrasing": { "en": "Blood when I pass urine", "hi": "पेशाब में खून", "kn": "ಮೂತ್ರದಲ್ಲಿ ರಕ್ತ" },
+      "cluster": "urological",
+      "safe_window_days": 0,
+      "applies": { "min_age": 45, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["bladder", "kidney"],
+      "expected_investigations": ["urine_cytology", "ultrasound_kub", "cystoscopy"],
+      "citation": { "source": "NG12", "section": "1.6.1", "quote": "Refer people using a suspected cancer pathway referral for bladder cancer if they are aged 45 and over and have unexplained visible haematuria.", "confidence": "high" }
+    },
+    {
+      "code": "urinary_hesitancy",
+      "label": { "en": "Difficulty passing urine", "hi": "पेशाब करने में कठिनाई", "kn": "ಮೂತ್ರ ವಿಸರ್ಜನೆಗೆ ಕಷ್ಟ" },
+      "patient_phrasing": { "en": "Trouble starting or a weak stream", "hi": "पेशाब शुरू करने में दिक्कत", "kn": "ಮೂತ್ರ ಪ್ರಾರಂಭಿಸಲು ತೊಂದರೆ" },
+      "cluster": "urological",
+      "safe_window_days": 42,
+      "applies": { "min_age": 50, "max_age": null, "sex": "male" },
+      "milestones": [],
+      "associated_sites": ["prostate"],
+      "expected_investigations": ["psa", "digital_rectal_exam"],
+      "citation": { "source": "NG12", "section": "1.6.3", "quote": "Consider a prostate specific antigen test and digital rectal examination to assess for prostate cancer in men with lower urinary tract symptoms.", "confidence": "high" }
+    },
+    {
+      "code": "testicular_lump",
+      "label": { "en": "Lump or swelling in testicle", "hi": "अंडकोष में गांठ", "kn": "ವೃಷಣದಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "A lump in my testicle", "hi": "अंडकोष में गांठ", "kn": "ವೃಷಣದಲ್ಲಿ ಗಂಟು" },
+      "cluster": "urological",
+      "safe_window_days": 0,
+      "applies": { "min_age": 15, "max_age": null, "sex": "male" },
+      "milestones": [],
+      "associated_sites": ["testis"],
+      "expected_investigations": ["ultrasound_scrotum", "tumour_markers"],
+      "citation": { "source": "NG12", "section": "1.6.5", "quote": "Consider a suspected cancer pathway referral for testicular cancer in men with a non-painful enlargement or change in shape or texture of the testis.", "confidence": "high" }
+    },
+
+    {
+      "code": "appetite_loss",
+      "label": { "en": "Loss of appetite", "hi": "भूख न लगना", "kn": "ಹಸಿವು ಆಗದಿರುವುದು" },
+      "patient_phrasing": {
+        "en": "I do not feel like eating",
+        "hi": "खाने का मन नहीं करता",
+        "kn": "ತಿನ್ನಲು ಮನಸ್ಸಾಗುತ್ತಿಲ್ಲ"
+      },
+      "cluster": "systemic",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung", "stomach", "pancreas", "colorectum"],
+      "expected_investigations": ["cbc", "ultrasound_abdomen"],
+      "citation": {
+        "source": "NG12",
+        "section": "1.1.2",
+        "quote": "Appetite loss is a qualifying unexplained symptom for lung cancer assessment in people aged 40 and over, and appears across upper gastrointestinal referral criteria.",
+        "confidence": "high"
+      }
+    },
+    {
+      "code": "weight_loss",
+      "label": { "en": "Unexplained weight loss", "hi": "बिना कारण वजन घटना", "kn": "ಕಾರಣವಿಲ್ಲದೆ ತೂಕ ಇಳಿಕೆ" },
+      "patient_phrasing": { "en": "Losing weight without trying", "hi": "बिना कोशिश के वजन कम होना", "kn": "ಪ್ರಯತ್ನವಿಲ್ಲದೆ ತೂಕ ಕಡಿಮೆಯಾಗುವುದು" },
+      "cluster": "systemic",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 28,
+          "action": "BROAD_WORKUP",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "You have been losing weight for a month without trying. This needs blood tests and a scan.",
+            "hi": "आपका वजन बिना कोशिश के एक महीने से घट रहा है। इसके लिए खून की जांच और स्कैन जरूरी है।",
+            "kn": "ಒಂದು ತಿಂಗಳಿಂದ ಪ್ರಯತ್ನವಿಲ್ಲದೆ ತೂಕ ಇಳಿಯುತ್ತಿದೆ. ಇದಕ್ಕೆ ರಕ್ತ ಪರೀಕ್ಷೆ ಮತ್ತು ಸ್ಕ್ಯಾನ್ ಬೇಕು."
+          },
+          "source": "NG12 1.13"
+        }
+      ],
+      "associated_sites": ["lung", "stomach", "pancreas", "colorectum", "lymphoma", "oesophagus"],
+      "expected_investigations": ["cbc", "chest_xray", "ultrasound_abdomen"],
+      "citation": { "source": "NG12", "section": "1.13", "quote": "Unexplained weight loss is a recognised feature across multiple cancer sites and appears in the referral criteria for lung, upper GI, colorectal, pancreatic and haematological cancers.", "confidence": "high" }
+    },
+    {
+      "code": "fatigue",
+      "label": { "en": "Constant tiredness", "hi": "लगातार थकान", "kn": "ನಿರಂತರ ಆಯಾಸ" },
+      "patient_phrasing": { "en": "Tired all day even after resting", "hi": "आराम के बाद भी दिनभर थकान", "kn": "ವಿಶ್ರಾಂತಿ ನಂತರವೂ ದಿನವಿಡೀ ಆಯಾಸ" },
+      "cluster": "systemic",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lung", "colorectum", "lymphoma", "leukaemia"],
+      "expected_investigations": ["cbc"],
+      "citation": { "source": "NG12", "section": "1.1.2", "quote": "Fatigue is a qualifying unexplained symptom for lung cancer assessment and a common presenting feature of haematological malignancy.", "confidence": "medium" }
+    },
+    {
+      "code": "fever_prolonged",
+      "label": { "en": "Fever that keeps coming back", "hi": "बार-बार बुखार", "kn": "ಪದೇ ಪದೇ ಜ್ವರ" },
+      "patient_phrasing": { "en": "Fever that keeps returning", "hi": "बुखार बार-बार आता है", "kn": "ಜ್ವರ ಮತ್ತೆ ಮತ್ತೆ ಬರುತ್ತದೆ" },
+      "cluster": "systemic",
+      "safe_window_days": 21,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [
+        {
+          "day": 14,
+          "action": "CBC_MANDATORY",
+          "tier_floor": "MODERATE",
+          "message": {
+            "en": "The fever has lasted more than 2 weeks. Ask for a blood count test before taking any more antibiotics.",
+            "hi": "बुखार 2 हफ्ते से ज्यादा है। और एंटीबायोटिक लेने से पहले खून की जांच (सीबीसी) मांगें।",
+            "kn": "ಜ್ವರ 2 ವಾರಕ್ಕಿಂತ ಹೆಚ್ಚು ಇದೆ. ಇನ್ನಷ್ಟು ಆ್ಯಂಟಿಬಯೋಟಿಕ್ ತೆಗೆದುಕೊಳ್ಳುವ ಮೊದಲು ರಕ್ತ ಪರೀಕ್ಷೆ ಕೇಳಿ."
+          },
+          "source": "Field research: CanKids KidsCan reported repeated anti-typhoid and anti-malarial courses given without a CBC ever being done."
+        }
+      ],
+      "associated_sites": ["lymphoma", "leukaemia"],
+      "expected_investigations": ["cbc", "peripheral_smear", "blood_culture"],
+      "citation": { "source": "NG12", "section": "1.12", "quote": "Offer a full blood count within 48 hours to assess for leukaemia in adults with unexplained fever, and consider very urgent referral in children.", "confidence": "high" }
+    },
+    {
+      "code": "night_sweats",
+      "label": { "en": "Drenching night sweats", "hi": "रात में तेज पसीना", "kn": "ರಾತ್ರಿ ಹೆಚ್ಚು ಬೆವರು" },
+      "patient_phrasing": { "en": "Sweating so much at night my clothes get wet", "hi": "रात में इतना पसीना कि कपड़े भीग जाएं", "kn": "ರಾತ್ರಿ ಬಟ್ಟೆ ಒದ್ದೆಯಾಗುವಷ್ಟು ಬೆವರು" },
+      "cluster": "systemic",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lymphoma", "leukaemia"],
+      "expected_investigations": ["cbc", "chest_xray"],
+      "citation": { "source": "NG12", "section": "1.12.1", "quote": "Consider a suspected cancer pathway referral for Hodgkin lymphoma in people presenting with night sweats.", "confidence": "high" }
+    },
+    {
+      "code": "lymph_node_swelling",
+      "label": { "en": "Swollen glands", "hi": "गिल्टी में सूजन", "kn": "ಗ್ರಂಥಿ ಊತ" },
+      "patient_phrasing": { "en": "Swollen glands that have not gone down", "hi": "गिल्टी जो कम नहीं हुई", "kn": "ಕಡಿಮೆಯಾಗದ ಗ್ರಂಥಿ ಊತ" },
+      "cluster": "systemic",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["lymphoma", "head_neck", "breast"],
+      "expected_investigations": ["cbc", "fnac", "ultrasound_node"],
+      "citation": { "source": "NG12", "section": "1.12.1", "quote": "Consider a suspected cancer pathway referral for non-Hodgkin lymphoma in people with unexplained lymphadenopathy.", "confidence": "high" }
+    },
+    {
+      "code": "pallor",
+      "label": { "en": "Looking pale / weakness", "hi": "पीलापन और कमजोरी", "kn": "ಬಿಳಿಚಿಕೊಳ್ಳುವುದು ಮತ್ತು ದೌರ್ಬಲ್ಯ" },
+      "patient_phrasing": { "en": "Looking pale and feeling weak", "hi": "पीला दिखना और कमजोरी", "kn": "ಬಿಳಿಚಿ ಕಾಣುವುದು ಮತ್ತು ಸುಸ್ತು" },
+      "cluster": "systemic",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["colorectum", "stomach", "leukaemia"],
+      "expected_investigations": ["cbc", "iron_studies"],
+      "citation": { "source": "NG12", "section": "1.3.4", "quote": "Offer testing for iron deficiency anaemia; unexplained iron deficiency anaemia is an indication for colorectal investigation.", "confidence": "high" }
+    },
+    {
+      "code": "bone_pain",
+      "label": { "en": "Persistent bone pain", "hi": "लगातार हड्डी में दर्द", "kn": "ನಿರಂತರ ಮೂಳೆ ನೋವು" },
+      "patient_phrasing": { "en": "Bone pain that does not stop", "hi": "हड्डी का दर्द जो नहीं रुकता", "kn": "ನಿಲ್ಲದ ಮೂಳೆ ನೋವು" },
+      "cluster": "systemic",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["bone", "myeloma", "metastatic"],
+      "expected_investigations": ["xray_local", "cbc", "esr"],
+      "citation": { "source": "NG12", "section": "1.12.4", "quote": "Consider a very urgent direct access X-ray in children and young people with unexplained bone swelling or pain.", "confidence": "high" }
+    },
+    {
+      "code": "easy_bruising",
+      "label": { "en": "Bruising easily", "hi": "आसानी से नील पड़ना", "kn": "ಸುಲಭವಾಗಿ ಮೂಗೇಟು" },
+      "patient_phrasing": { "en": "Bruises appear without injury", "hi": "बिना चोट के नील पड़ना", "kn": "ಗಾಯವಿಲ್ಲದೆ ಮೂಗೇಟು" },
+      "cluster": "systemic",
+      "safe_window_days": 14,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["leukaemia"],
+      "expected_investigations": ["cbc", "peripheral_smear"],
+      "citation": { "source": "NG12", "section": "1.12.2", "quote": "Offer a very urgent full blood count to assess for leukaemia in adults with unexplained bruising.", "confidence": "high" }
+    },
+
+    {
+      "code": "skin_sore_nonhealing",
+      "label": { "en": "Sore that will not heal", "hi": "घाव जो नहीं भरता", "kn": "ಗುಣವಾಗದ ಗಾಯ" },
+      "patient_phrasing": { "en": "A wound on my skin that has not healed", "hi": "त्वचा पर घाव जो नहीं भरा", "kn": "ಚರ್ಮದ ಮೇಲೆ ಗುಣವಾಗದ ಗಾಯ" },
+      "cluster": "skin",
+      "safe_window_days": 42,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["skin"],
+      "expected_investigations": ["dermatology_exam", "skin_biopsy"],
+      "citation": { "source": "NG12", "section": "1.10", "quote": "Consider referral for people with a skin lesion that raises the suspicion of squamous cell carcinoma.", "confidence": "high" }
+    },
+    {
+      "code": "changing_mole",
+      "label": { "en": "Mole that is changing", "hi": "तिल जो बदल रहा है", "kn": "ಬದಲಾಗುತ್ತಿರುವ ಮಚ್ಚೆ" },
+      "patient_phrasing": { "en": "A mole that has changed shape or colour", "hi": "तिल का आकार या रंग बदलना", "kn": "ಮಚ್ಚೆಯ ಆಕಾರ ಅಥವಾ ಬಣ್ಣ ಬದಲಾಗಿದೆ" },
+      "cluster": "skin",
+      "safe_window_days": 14,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["melanoma"],
+      "expected_investigations": ["dermatology_exam", "dermoscopy"],
+      "citation": { "source": "NG12", "section": "1.10.1", "quote": "Refer people using a suspected cancer pathway referral for melanoma if they have a suspicious pigmented skin lesion with a weighted 7-point checklist score of 3 or more.", "confidence": "high" }
+    },
+
+    {
+      "code": "abdominal_mass_child",
+      "label": { "en": "Lump in a child's abdomen", "hi": "बच्चे के पेट में गांठ", "kn": "ಮಗುವಿನ ಹೊಟ್ಟೆಯಲ್ಲಿ ಗಂಟು" },
+      "patient_phrasing": { "en": "A lump in my child's stomach", "hi": "बच्चे के पेट में गांठ", "kn": "ಮಗುವಿನ ಹೊಟ್ಟೆಯಲ್ಲಿ ಗಂಟು" },
+      "cluster": "paediatric",
+      "safe_window_days": 0,
+      "applies": { "min_age": 0, "max_age": 18, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["wilms", "neuroblastoma", "lymphoma"],
+      "expected_investigations": ["ultrasound_abdomen", "cbc"],
+      "citation": { "source": "NG12", "section": "1.12.6", "quote": "Consider a very urgent referral for children with a palpable abdominal mass or unexplained enlarged abdominal organ.", "confidence": "high" }
+    },
+    {
+      "code": "headache_progressive",
+      "label": { "en": "Worsening headache", "hi": "बढ़ता हुआ सिरदर्द", "kn": "ಹೆಚ್ಚಾಗುತ್ತಿರುವ ತಲೆನೋವು" },
+      "patient_phrasing": { "en": "Headache that keeps getting worse", "hi": "सिरदर्द जो बढ़ता जा रहा है", "kn": "ಹೆಚ್ಚಾಗುತ್ತಿರುವ ತಲೆನೋವು" },
+      "cluster": "neuro",
+      "safe_window_days": 28,
+      "applies": { "min_age": null, "max_age": null, "sex": "any" },
+      "milestones": [],
+      "associated_sites": ["brain"],
+      "expected_investigations": ["neuro_exam", "mri_brain"],
+      "citation": { "source": "NG12", "section": "1.11.1", "quote": "Consider an urgent direct access MRI scan of the brain in adults with progressive, sub-acute loss of central neurological function.", "confidence": "high" }
+    }
+  ],
+
+  "combination_rules": [
+    {
+      "id": "NG12_LUNG_EVER_SMOKED",
+      "label": "Lung: age 40+, ever smoked, one or more qualifying symptom",
+      "when": {
+        "min_age": 40,
+        "requires_risk_factor": "ever_smoked",
+        "any_of": ["cough", "fatigue", "breathlessness", "chest_pain", "weight_loss", "appetite_loss"],
+        "min_count": 1,
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "URGENT_CHEST_XRAY_2WK", "site": "lung" },
+      "citation": { "source": "NG12", "section": "1.1.2", "quote": "Offer an urgent chest X-ray in people aged 40 and over if they have ever smoked and have 1 or more unexplained symptoms." }
+    },
+    {
+      "id": "NG12_LUNG_TWO_SYMPTOMS",
+      "label": "Lung: age 40+, two or more qualifying symptoms (any smoking status)",
+      "when": {
+        "min_age": 40,
+        "any_of": ["cough", "fatigue", "breathlessness", "chest_pain", "weight_loss", "appetite_loss"],
+        "min_count": 2,
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "URGENT_CHEST_XRAY_2WK", "site": "lung" },
+      "citation": { "source": "NG12", "section": "1.1.2", "quote": "Offer an urgent chest X-ray in people aged 40 and over if they have 2 or more unexplained symptoms." }
+    },
+    {
+      "id": "NG12_UPPER_GI_WEIGHT_LOSS",
+      "label": "Upper GI: age 55+, weight loss with upper abdominal symptoms",
+      "when": {
+        "min_age": 55,
+        "all_of": ["weight_loss"],
+        "any_of": ["dyspepsia", "epigastric_pain", "vomiting_persistent", "early_satiety"],
+        "min_count": 1,
+        "anchor_persisted_days": 21
+      },
+      "then": { "tier_floor": "HIGH", "action": "URGENT_ENDOSCOPY_2WK", "site": "stomach_oesophagus" },
+      "citation": { "source": "NG12", "section": "1.2.2", "quote": "Offer urgent direct access upper gastrointestinal endoscopy in people aged 55 and over with weight loss and any of: upper abdominal pain, reflux, dyspepsia." }
+    },
+    {
+      "id": "NG12_COLORECTAL_ANAEMIA",
+      "label": "Colorectal: weight loss or anaemia with bowel symptoms",
+      "when": {
+        "min_age": 40,
+        "any_of": ["rectal_bleeding", "bowel_habit_change", "abdominal_lump", "tenesmus"],
+        "min_count": 1,
+        "companion_any_of": ["weight_loss", "pallor"],
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "URGENT_COLONOSCOPY_2WK", "site": "colorectum" },
+      "citation": { "source": "NG12", "section": "1.3.1", "quote": "Refer adults using a suspected cancer pathway referral for colorectal cancer if they have unexplained weight loss with abdominal pain, or iron-deficiency anaemia with a change in bowel habit." }
+    },
+    {
+      "id": "ORAL_TOBACCO_LESION",
+      "label": "Oral: any oral lesion in a tobacco or areca user",
+      "when": {
+        "requires_risk_factor": "tobacco_any",
+        "any_of": ["mouth_ulcer_nonhealing", "oral_white_red_patch", "trismus", "loose_teeth"],
+        "min_count": 1,
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "ORAL_EXAM_AND_BIOPSY", "site": "oral_cavity" },
+      "citation": { "source": "NCG", "section": "oral", "quote": "Any persistent oral mucosal lesion in a tobacco or areca nut user should be regarded as potentially malignant until proven otherwise. India accounts for approximately one third of the global oral cancer burden." }
+    },
+    {
+      "id": "GYNAE_CERVIX_TRIAD",
+      "label": "Cervix: abnormal bleeding with discharge",
+      "when": {
+        "sex": "female",
+        "min_age": 25,
+        "any_of": ["postcoital_bleeding", "intermenstrual_bleeding", "postmenopausal_bleeding"],
+        "min_count": 1,
+        "companion_any_of": ["vaginal_discharge_foul", "pelvic_pain"],
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "SPECULUM_AND_VIA", "site": "cervix" },
+      "citation": { "source": "NG12", "section": "1.6.4", "quote": "Consider urgent assessment for cervical cancer in women with abnormal bleeding, particularly when accompanied by abnormal discharge." }
+    },
+    {
+      "id": "PAED_FEVER_PALLOR",
+      "label": "Paediatric: prolonged fever with pallor or bruising",
+      "when": {
+        "max_age": 18,
+        "all_of": ["fever_prolonged"],
+        "companion_any_of": ["pallor", "easy_bruising", "bone_pain", "lymph_node_swelling"],
+        "anchor_persisted_days": 14
+      },
+      "then": { "tier_floor": "HIGH", "action": "URGENT_CBC_48H", "site": "leukaemia_lymphoma" },
+      "citation": { "source": "NG12", "section": "1.12.3", "quote": "Offer a very urgent full blood count to assess for leukaemia in children with any of: pallor, persistent fatigue, unexplained fever, unexplained persistent infection, generalised lymphadenopathy, persistent or unexplained bone pain, unexplained bruising." }
+    }
+  ]
+}
